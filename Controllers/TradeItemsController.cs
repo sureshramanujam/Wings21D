@@ -30,13 +30,15 @@ namespace Wings21D.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    cmd.CommandText = "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                    cmd.CommandText = "With ProductsList As ( " +
+                                      "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
                                       "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
                                       "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
                                       "From Trade_Items_Table a " +
                                       "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                      "Where BalanceQty>0 " +
                                       "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
-                                      "Order by a.ItemName";
+                                      ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName Order by ItemName";
 
                     da.SelectCommand = cmd;
                     Items.TableName = "Items";
