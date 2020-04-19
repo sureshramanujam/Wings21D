@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
         // GET api/values
         //public IEnumerable<string> Get()
-        public HttpResponseMessage Get(string dbName)
+        public HttpResponseMessage Get(string dbName, string pc)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -30,7 +30,25 @@ namespace Wings21D.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    cmd.CommandText = "With ProductsList As ( " +
+
+                    if(String.IsNullOrEmpty(pc))
+                    {
+                        if(pc=="All Profit Centers")
+                        {
+                            cmd.CommandText = "With ProductsList As ( " +
+                                              "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                                              "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
+                                              "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
+                                              "From Trade_Items_Table a " +
+                                              "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                              "Where BalanceQty>0 " +
+                                              "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
+                                              ") Select * from ProductsList Where BalanceQty>0 And ProfitCenterName='" + pc + 
+                                              "' Order By ItemName Order by ItemName";
+                        }
+                        else
+                        {
+                            cmd.CommandText = "With ProductsList As ( " +
                                       "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
                                       "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
                                       "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
@@ -39,6 +57,10 @@ namespace Wings21D.Controllers
                                       "Where BalanceQty>0 " +
                                       "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                       ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName Order by ItemName";
+                        }
+                    }
+
+                    
 
                     da.SelectCommand = cmd;
                     Items.TableName = "Items";
