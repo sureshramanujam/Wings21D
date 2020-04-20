@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
 
                     
-                        if(pc!="All Profit Centers")
+                        if(pc.ToUpper()!="ALL PROFIT CENTERS")
                         {
                             cmd.CommandText = "With ProductsList As ( " +
                                               "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -40,10 +40,9 @@ namespace Wings21D.Controllers
                                               "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
                                               "From Trade_Items_Table a " +
                                               "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
-                                              "Where BalanceQty>0 " +
                                               "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                               ") Select * from ProductsList Where BalanceQty>0 And ProfitCenterName='" + pc + 
-                                              "' Order By ItemName Order by ItemName";
+                                              "' Order By ItemName";
                         }
                         else
                         {
@@ -53,9 +52,8 @@ namespace Wings21D.Controllers
                                       "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
                                       "From Trade_Items_Table a " +
                                       "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
-                                      "Where BalanceQty>0 " +
                                       "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
-                                      ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName Order by ItemName";
+                                      ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName";
                         }
 
                     da.SelectCommand = cmd;
