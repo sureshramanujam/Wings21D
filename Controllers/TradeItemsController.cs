@@ -23,7 +23,7 @@ namespace Wings21D.Controllers
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable Items = new DataTable();
 
-            if (!String.IsNullOrEmpty(dbName))
+            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(pc))
             {
                 try
                 {
@@ -31,9 +31,8 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    if(String.IsNullOrEmpty(pc))
-                    {
-                        if(pc=="All Profit Centers")
+                    
+                        if(pc!="All Profit Centers")
                         {
                             cmd.CommandText = "With ProductsList As ( " +
                                               "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -58,9 +57,6 @@ namespace Wings21D.Controllers
                                       "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                       ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName Order by ItemName";
                         }
-                    }
-
-                    
 
                     da.SelectCommand = cmd;
                     Items.TableName = "Items";
