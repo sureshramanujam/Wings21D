@@ -101,13 +101,20 @@ namespace Wings21D.Controllers
                     docNumberAdapter.SelectCommand = cmd;
                     docNumberAdapter.Fill(newDocumentNumber);
 
+                    String sProfitCenter = String.Empty;
+
                     foreach (SalesOrderEntry soe in mySO)
                     {
+                        if (soe.profitCenterName == "All Profit Centers")
+                            sProfitCenter = "Profit Center";
+                        else
+                            sProfitCenter = soe.profitCenterName;
+
                         cmd.CommandText = "Insert Into Trade_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.itemName + "'," +
                                           soe.quantityInPieces + "," + soe.quantityInPacks + ",'" + soe.transactionRemarks + "','OR-M-'," +
                                           "'OR-M-" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +  "',0,'" + soe.userName + "','" +
-                                          soe.profitCenterName + "')";
+                                          sProfitCenter + "')";
 
                         cmd.ExecuteNonQuery();
                     }
