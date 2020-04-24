@@ -89,7 +89,7 @@ namespace Wings21D.Controllers
 
                     if(availableCustoemrBalances.Rows.Count > 0)
                     {
-                        cmd.CommandText = "Delete * from Trade_CustomerPendingBills_Table";
+                        cmd.CommandText = "Delete from Trade_CustomerPendingBills_Table";
                         cmd.ExecuteNonQuery();
                     }
 

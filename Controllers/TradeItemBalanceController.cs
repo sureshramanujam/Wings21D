@@ -88,7 +88,7 @@ namespace Wings21D.Controllers
 
                     if (availableItemBalances.Rows.Count > 0)
                     {
-                        cmd.CommandText = "Delete * from Trade_ItemBalance_Table";
+                        cmd.CommandText = "Delete from Trade_ItemBalance_Table";
                         cmd.ExecuteNonQuery();
                     }
 
