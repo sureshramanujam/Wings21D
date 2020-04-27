@@ -15,23 +15,26 @@ namespace Wings21D.Controllers
     {
         // GET api/values
         //public IEnumerable<string> Get()
-        public HttpResponseMessage Get(string dbName)
+        public HttpResponseMessage Get(string dbName, string custName)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable CustomerBalance = new DataTable();
+            DataTable PendingInvoices = new DataTable();
 
-            if (!String.IsNullOrEmpty(dbName))
+            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
                 try
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand("select * from Trade_CustomerBalance_Table Order By CustomerName", con);
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.Connection = con;
+                    cmd.CommandText = "select * from Trade_CustomerBalance_Table " +
+                                      "Where CustomerNam='" + custName + " Order by CustomerName, BillDate, BillNumber";
                     da.SelectCommand = cmd;
-                    CustomerBalance.TableName = "CustomerBalance";
-                    da.Fill(CustomerBalance);
+                    PendingInvoices.TableName = "PendingInvoices";
+                    da.Fill(PendingInvoices);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -41,7 +44,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    CustomerBalance = CustomerBalance
+                    PendingInvoices = PendingInvoices
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
