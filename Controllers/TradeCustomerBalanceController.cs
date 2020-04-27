@@ -30,7 +30,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    cmd.CommandText = "select * from Trade_CustomerBalance_Table " +
+                    cmd.CommandText = "select * from Trade_CustomerPendingBills_Table " +
                                       "Where CustomerName='" + custName + "' Order by CustomerName, BillDate, BillNumber";
                     da.SelectCommand = cmd;
                     PendingInvoices.TableName = "PendingInvoices";
