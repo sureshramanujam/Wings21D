@@ -33,7 +33,9 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
-                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate' From CashCollections_Table " +
+                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
+                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
+                                      " From CashCollections_Table " +
                                       //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
                                       "Where Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
