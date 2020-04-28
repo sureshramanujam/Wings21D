@@ -40,9 +40,10 @@ namespace Wings21D.Controllers
                                       "' Order By a.DocumentNo";
                     */
 
-                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate' From Trade_SalesOrder_Table " +
-                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
+                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate', " +
                                       "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
+                                      "From Trade_SalesOrder_Table " +
+                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
                                       "Where Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
                                       "Order By OrderDate Desc, DocumentNo";
