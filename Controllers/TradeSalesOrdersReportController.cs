@@ -42,6 +42,7 @@ namespace Wings21D.Controllers
 
                     cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate' From Trade_SalesOrder_Table " +
                                       //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
+                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
                                       "Where Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
                                       "Order By OrderDate Desc, DocumentNo";
