@@ -32,30 +32,17 @@ namespace Wings21D.Controllers
                 {
                     cmd.Connection = con;
                     con.Open();
+                    cmd.CommandText = "Select DISTINCT a.CustomerName, ISNULL(a.CustomerCity,'Not Set') CustomerCity, " +
+                                      "ISNULL(a.GSTNumber,'Not Set') GSTNumber, ISNULL(Sum(b.PendingValue),0) TotalDue " +
+                                      "From Books_Customers_Table a LEFT Join Books_CustomersPendingBills_Table b " +
+                                      "On a.CustomerName = b.CustomerName "  +
+                                      "Group by a. CustomerName, b.CustomerName, a.GSTNumber, a.CustomerCity " +
+                                      "Order by a.CustomerName";
 
-                    /*if (!String.IsNullOrEmpty(beatName))
-                    {
-                        cmd.CommandText = "Select DISTINCT a.CustomerName, a.BeatName, ISNULL(a.CustomerCity,'Not Set') CustomerCity, " +
-                                          "ISNULL(a.GSTNumber,'Not Set') GSTNumber, ISNULL(Sum(b.PendingValue),0) TotalDue " +
-                                          "From Books_Customers_Table a LEFT Join Books_CustomerPendingBills_Table b " +
-                                          "On a.CustomerName = b.CustomerName Where a.BeatName='" + beatName.Trim() + "'" +
-                                          "Group by a. CustomerName, b.CustomerName, a.BeatName, a.GSTNumber, a.CustomerCity " +
-                                          "Order by a.CustomerName, a.BeatName";
-                    }
-                    else*/
-                    {
-                        cmd.CommandText = "Select DISTINCT a.CustomerName, ISNULL(a.CustomerCity,'Not Set') CustomerCity, " +
-                                          "ISNULL(a.GSTNumber,'Not Set') GSTNumber, ISNULL(Sum(b.PendingValue),0) TotalDue " +
-                                          "From Books_Customers_Table a LEFT Join Books_CustomerPendingBills_Table b " +
-                                          "On a.CustomerName = b.CustomerName "  +
-                                          "Group by a. CustomerName, b.CustomerName, a.GSTNumber, a.CustomerCity " +
-                                          "Order by a.CustomerName";
-                    }
                     da.SelectCommand = cmd;
                     Customers.TableName = "Customers";
                     da.Fill(Customers);
                     con.Close();
-
                 }
                 catch (Exception ex)
                 {
