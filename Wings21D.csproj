@@ -182,6 +182,7 @@
     <Compile Include="Controllers\TradeDeleteItemBalanceController.cs" />
     <Compile Include="Controllers\TradeCashCollectionsReportController.cs" />
     <Compile Include="Controllers\BooksSalesOrderController.cs" />
+    <Compile Include="Controllers\BooksSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrderController.cs" />
     <Compile Include="Controllers\UpdateTransactionFlagController.cs" />
