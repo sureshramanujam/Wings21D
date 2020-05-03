@@ -73,6 +73,8 @@ namespace Wings21D.Controllers
                             {
                                 cmd.CommandText = "Update Trade_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
                                 cmd.ExecuteNonQuery();
+                                cmd.CommandText = "Update Books_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
+                                cmd.ExecuteNonQuery();
                             }
                             con.Close();
                             break;
