@@ -31,7 +31,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
                     cmd.CommandText = "Select a.ProductName, a.HSNSAC, a.GSTRate," +
-                                      "Sum(a.SalesPriceListRate)SalesPrice, Sum(a.ProductMRP) ProductMRP, " +
+                                      "Sum(a.SalesPrice)SalesPrice, Sum(a.ProductMRP) ProductMRP, " +
                                       "ISNULL(Sum(b.AvailableQty),0) BalanceQty " +
                                       "From Books_Products_Table a " +
                                       "Left Join Books_ProductBalance_Table b On a.ProductName=b.ProductName " +
