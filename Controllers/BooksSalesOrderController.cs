@@ -102,7 +102,7 @@ namespace Wings21D.Controllers
 
                     foreach (BooksSalesOrderEntry soe in mySO)
                     {
-                        cmd.CommandText = "Insert Into Trade_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
+                        cmd.CommandText = "Insert Into Books_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.productName + "'," +
                                           soe.quantity + ",'" + soe.transactionRemarks + "','GSO-M-'," +
                                           "'GSO-M-" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +  "',0,'" + soe.userName + "')";
