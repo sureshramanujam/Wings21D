@@ -21,14 +21,14 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable Products = new DataTable();
+            DataTable Products = new DataTable();            
 
             if (!String.IsNullOrEmpty(dbName))
-            {
+            {   
                 try
                 {
-                    con.Open();
                     SqlCommand cmd = new SqlCommand();
+                    con.Open();                    
                     cmd.Connection = con;
                     cmd.CommandText = "Select a.ProductName, a.HSNSAC, a.GSTRate," +
                                       "Sum(a.SalesPrice)SalesPrice, Sum(a.ProductMRP) ProductMRP, " +
@@ -68,38 +68,42 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if(headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();            
             cmd.Connection = con;
-
-            /*
-            //SqlDataAdapter da = new SqlDataAdapter();
-            //DataTable dt = new DataTable();
-            if (dt.Rows.Count > 0)
-            {
-                cmd.CommandText = "Delete from Trade_Items_Table Where ItemName='" + titems.itemName + "'";
-                cmd.ExecuteNonQuery();
-
-                cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
-                titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
-                "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + titems.activeStatus + ")";
-                cmd.ExecuteNonQuery();
-
-                dt.Clear();
-
-                cmd.CommandText = "Select count(*) from Trade_Items_Table Where ItemName = '" + titems.itemName + "'";
-                da.Fill(dt);
-            }
-            */
-
+            
             if (!String.IsNullOrEmpty(dbName))
             {
+                if(!String.IsNullOrEmpty(uploadAll))
+                {
+                    if (uploadAll.Trim().ToLower() == "true")
+                    {
+                        try
+                        {
+                            con.Open();
+                            cmd.CommandText = "Delete from Books_Products_Table";
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
+                    }
+                }
+
                 try
                 {
                     con.Open();
