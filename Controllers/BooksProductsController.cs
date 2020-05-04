@@ -110,7 +110,7 @@ namespace Wings21D.Controllers
                     foreach (BooksProducts tproducts in ti)
                     {
                         cmd.CommandText = "Insert Into Books_Products_Table Values(NEWID(), '" +
-                        tproducts.productName + "','" + tproducts.hsnsac + "'," + tproducts.salesprice + ",'" + tproducts.gstrate + "'," + tproducts.productmrp + "," + tproducts.activeStatus + ")";
+                        tproducts.productName + "','" + tproducts.hsnsac + "'," + tproducts.rateperpiece + ",'" + tproducts.gstrate + "'," + tproducts.productmrp + "," + tproducts.activeStatus + ")";
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
