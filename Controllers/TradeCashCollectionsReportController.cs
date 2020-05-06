@@ -34,7 +34,7 @@ namespace Wings21D.Controllers
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "Select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
-                                      "Amount, RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
+                                      "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From CashCollections_Table " +
                                       //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +

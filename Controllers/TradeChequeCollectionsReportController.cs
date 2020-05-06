@@ -35,7 +35,7 @@ namespace Wings21D.Controllers
 
                     cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
                                       "Amount, ChequeNumber, Format(ChequeDate,'dd-MMM-yyyy') As 'ChequeDate', " +
-                                      "RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
+                                      "RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From ChequeCollections_Table " +
                                       "Where Username='" + userName + "' " +
