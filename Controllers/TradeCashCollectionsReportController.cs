@@ -31,13 +31,15 @@ namespace Wings21D.Controllers
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    //DateTime asonDate = DateTime.Parse(asAtDate);
+                    DateTime startDate = DateTime.Parse(fromDate);
+                    DateTime endDate = DateTime.Parse(toDate);
+
 
                     cmd.CommandText = "Select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
                                       "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
-                                      "From CashCollections_Table " + "Where Convert(varchar,TransactionDate,23) >= '" + fromDate.ToString() + "' And " +
-                                      "Convert(varchar,TransactionDate,23) <= '" + toDate.ToString() + "' And " + " Username='" + userName + "' " +
+                                      "From CashCollections_Table " + "Where Convert(varchar,TransactionDate,23) >= '" + String.Format("{0:yyyy-MM-dd}", startDate) + "' And " +
+                                      "Convert(varchar,TransactionDate,23) <= '" + String.Format("{0:yyyy-MM-dd}", endDate) + "' And " + " Username='" + userName + "' " +
                                       "Order By CollectionDate Desc, DocumentNo";
 
                     da.SelectCommand = cmd;
