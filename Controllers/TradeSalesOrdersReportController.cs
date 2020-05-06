@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string userName)
+        public HttpResponseMessage Get(string dbName, string fromDate, string toDate, string userName)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -43,8 +43,9 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate', " +
                                       "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
                                       "From Trade_SalesOrder_Table " +
-                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
-                                      "Where Username='" + userName + "' " +
+                                      "Where Convert(varchar,TransactionDate,23)>='" + fromDate + "' And " +
+                                      "Convert(varchar,TransactionDate,23)<='" + toDate + "' And " +
+                                      "Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
                                       "Order By OrderDate Desc, DocumentNo";
 
