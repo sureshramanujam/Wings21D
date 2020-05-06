@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string userName)
+        public HttpResponseMessage Get(string dbName, string fromDate, string toDate, string userName)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -36,10 +36,8 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "Select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
                                       "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
-                                      "From CashCollections_Table " +
-                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
-                                      "Where Username='" + userName + "' " +
-                                      //"Group by DocumentNo, TransactionDate " +
+                                      "From CashCollections_Table " + "Where Convert(varchar,TransactionDate,23) >= '" + fromDate.ToString() + "' And " +
+                                      "Convert(varchar,TransactionDate,23) <= '" + toDate.ToString() + "' And " + " Username='" + userName + "' " +
                                       "Order By CollectionDate Desc, DocumentNo";
 
                     da.SelectCommand = cmd;
