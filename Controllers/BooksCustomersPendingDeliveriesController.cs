@@ -81,22 +81,32 @@ namespace Wings21D.Controllers
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
-            DateTime todayDate = DateTime.Now;
-            var dateOnly = todayDate.Date;
-
             if (!String.IsNullOrEmpty(dbName))
             {
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select * From Books_CustomersPendingDeliveries_Desktop_Table";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersPendingDeliveries_Desktop_Table'";
                 da.SelectCommand = cmd;
+                dt.Clear();
                 da.Fill(dt);
+                con.Close();
 
                 if (dt.Rows.Count > 0)
                 {
+                    con.Open();
                     cmd.CommandText = "Delet From Books_CustomersPendingDeliveries_Desktop_Table";
                     cmd.ExecuteNonQuery();
+                    con.Close();
+                    con.Open();
+                    foreach (BooksCustomersPendingDeliveries a in BCPD)
+                    {
+                        cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.party + "','" + a.product + "','" +
+                                          a.batch + "','" + a.dcno + "','" + a.invoiceno + "'," + a.billedqty + ",'" + a.branch + "'," + a.lineamount +
+                                          ",'" + a.userName + "')";
+
+                        cmd.ExecuteNonQuery();
+                    }
                     con.Close();
                 }
                 else
@@ -104,15 +114,7 @@ namespace Wings21D.Controllers
                     try
                     {
                         con.Open();
-
-                        cmd.CommandText = "Select name from sys.tables where name='Books_CustomersPendingDeliveries_Desktop_Table'";
-                        da.SelectCommand = cmd;
-                        dt.Clear();
-                        da.Fill(dt);
-
-                        if (dt.Rows.Count == 0)
-                        {
-                            cmd.CommandText = "Create Table Books_CustomersPendingDeliveries_Desktop_Table (" +
+                        cmd.CommandText = "Create Table Books_CustomersPendingDeliveries_Desktop_Table (" +
                                                "CustomerName nvarchar(265) null," +
                                                "ProductName nvarchar(265) null," +
                                                "Batch nvarchar(265) null," +
@@ -122,12 +124,12 @@ namespace Wings21D.Controllers
                                                "BranchName nvarchar(265) null," +
                                                "LineAmount decimal(18,2) null," +
                                                "Username nvarchar(265) null)";
-                        }
+                        cmd.ExecuteNonQuery();
 
                         foreach (BooksCustomersPendingDeliveries a in BCPD)
                         {
                             cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.party + "','" + a.product + "','" +
-                                              a.batch + "','" + a.dcno +"','" + a.invoiceno + "'," + a.billedqty + ",'" + a.branch +"'," + a.lineamount + 
+                                              a.batch + "','" + a.dcno + "','" + a.invoiceno + "'," + a.billedqty + ",'" + a.branch + "'," + a.lineamount +
                                               ",'" + a.userName + "')";
 
                             cmd.ExecuteNonQuery();

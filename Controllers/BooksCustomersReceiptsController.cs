@@ -89,31 +89,26 @@ namespace Wings21D.Controllers
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select * From Books_CustomersReceipts_Desktop_Table";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersReceipts_Desktop_Table'";
                 da.SelectCommand = cmd;
+                dt.Clear();
                 da.Fill(dt);
                 con.Close();
 
                 if (dt.Rows.Count > 0)
                 {
+                    con.Open();
                     cmd.CommandText = "Delete From Books_CustomersReceipts_Desktop_Table";
                     cmd.ExecuteNonQuery();
                     con.Close();
+                    con.Open();
                 }
                 else
                 {
                     try
                     {
                         con.Open();
-
-                        cmd.CommandText = "Select name from sys.tables where name='Books_CustomersReceipts_Desktop_Table'";
-                        da.SelectCommand = cmd;
-                        dt.Clear();
-                        da.Fill(dt);
-
-                        if (dt.Rows.Count == 0)
-                        {
-                            cmd.CommandText = "Create Table Books_CustomersReceipts_Desktop_Table (" +
+                        cmd.CommandText = "Create Table Books_CustomersReceipts_Desktop_Table (" +
                                                "CustomerName nvarchar(265) null," +
                                                "VoucherNumber nchar(100) null," +
                                                "VoucherDate date null," +
@@ -122,26 +117,24 @@ namespace Wings21D.Controllers
                                                "AgainstInvoiceNumber nchar(100) null," +
                                                "NetAmount decimal(18,2) null," +
                                                "Username nvarchar(265) null)";
-                        }
-                        else
-                        {
-                            foreach (BooksCustomersReceipts a in CSR)
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.account + "','" + a.voucherno +
-                                                  "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
-                                                  a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+                        cmd.ExecuteNonQuery();
 
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
+                        foreach (BooksCustomersReceipts a in CSR)
+                        {
+                            cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.account + "','" + a.voucherno +
+                                              "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
+                                              a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                     }
                     catch (Exception ex)
                     {
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
             else
             {

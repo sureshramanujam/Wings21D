@@ -89,14 +89,28 @@ namespace Wings21D.Controllers
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select * From Books_CustomersSalesOrdersBooked_Desktop_Table";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersSalesOrdersBooked_Desktop_Table'";
                 da.SelectCommand = cmd;
+                dt.Clear();
                 da.Fill(dt);
+                con.Close();
 
                 if (dt.Rows.Count > 0)
                 {
+                    con.Open();
                     cmd.CommandText = "Delete From Books_CustomersSalesOrdersBooked_Desktop_Table";
                     cmd.ExecuteNonQuery();
+                    con.Close();
+                    con.Open();
+                    
+                    foreach (BooksCustomersSalesOrdersBooked a in CSOB)
+                    {
+                        cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.orderno + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
+                                          a.party + "','" + a.product + "'," + a.bookedQty + "," + a.lineamount + ",'" + a.userName + "')";
+
+                        cmd.ExecuteNonQuery();
+                    }
                     con.Close();
                 }
                 else
@@ -104,20 +118,16 @@ namespace Wings21D.Controllers
                     try
                     {
                         con.Open();
-
-                        if (dt.Rows.Count == 0)
-                        {
-                            cmd.CommandText = "Create Table Books_CustomersSalesOrdersBooked_Desktop_Table (" +
-                                               "OrderNumber nchar(100) null," +
-                                               "OrderDate date null," +
-                                               "DueDate date null," +
-                                               "CustomerName nvarchar(265) null," +
-                                               "ProductName nvarchar(265) null," +
-                                               "BookedQty decimal(18,2) null," +
-                                               "LineAmount decimal(18,2) null," +
-                                               "Username nvarchar(265) null)";
-                        }
-
+                        cmd.CommandText = "Create Table Books_CustomersSalesOrdersBooked_Desktop_Table (" +
+                                              "OrderNumber nchar(100) null," +
+                                              "OrderDate date null," +
+                                              "DueDate date null," +
+                                              "CustomerName nvarchar(265) null," +
+                                              "ProductName nvarchar(265) null," +
+                                              "BookedQty decimal(18,2) null," +
+                                              "LineAmount decimal(18,2) null," +
+                                              "Username nvarchar(265) null)";
+                        cmd.ExecuteNonQuery();
                         foreach (BooksCustomersSalesOrdersBooked a in CSOB)
                         {
                             cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.orderno + "','" +
@@ -128,13 +138,13 @@ namespace Wings21D.Controllers
                         }
                         con.Close();
                     }
-
                     catch (Exception ex)
                     {
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                     return new HttpResponseMessage(HttpStatusCode.Created);
                 }
+                return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {

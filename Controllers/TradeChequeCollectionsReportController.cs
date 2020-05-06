@@ -34,12 +34,14 @@ namespace Wings21D.Controllers
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
-                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
+                                      "Amount, ChequeNumber, Format(ChequeDate,'dd-MMM-yyyy') As 'ChequeDate', " +
+                                      "RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
+                                      "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From ChequeCollections_Table " +
-                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
                                       "Where Username='" + userName + "' " +
-                                      "Group by DocumentNo, TransactionDate " +
                                       "Order By CollectionDate Desc, DocumentNo";
+                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
+
 
                     da.SelectCommand = cmd;
                     ChequeCollections.TableName = "ChequeCollections";

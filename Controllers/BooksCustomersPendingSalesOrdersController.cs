@@ -89,14 +89,27 @@ namespace Wings21D.Controllers
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select * From Books_CustomersPendingSalesOrder_Desktop_Table";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersPendingSalesOrder_Desktop_Table'";
                 da.SelectCommand = cmd;
+                dt.Clear();
                 da.Fill(dt);
+                con.Close();
 
                 if (dt.Rows.Count > 0)
                 {
+                    con.Open();
                     cmd.CommandText = "Delete From Books_CustomersPendingSalesOrder_Desktop_Table";
                     cmd.ExecuteNonQuery();
+                    con.Close();
+                    con.Open();
+                    foreach (BooksCustomersPendingSalesOrders a in CPSO)
+                    {
+                        cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.orderno + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
+                                          a.party + "','" + a.product + "'," + a.pendingqty + "," + a.lineamount + ",'" + a.branch + "','" + a.userName + "')";
+
+                        cmd.ExecuteNonQuery();
+                    }
                     con.Close();
                 }
                 else
@@ -104,10 +117,7 @@ namespace Wings21D.Controllers
                     try
                     {
                         con.Open();
-
-                        if (dt.Rows.Count == 0)
-                        {
-                            cmd.CommandText = "Create Table Books_CustomersPendingSalesOrder_Desktop_Table (" +
+                        cmd.CommandText = "Create Table Books_CustomersPendingSalesOrder_Desktop_Table (" +
                                                "OrderNumber nchar(100) null," +
                                                "OrderDate date null," +
                                                "DueDate date null," +
@@ -117,19 +127,17 @@ namespace Wings21D.Controllers
                                                "LineAmount decimal(18,2) null," +
                                                "BranchName nvarchar(265) null," +
                                                "Username nvarchar(265) null)";
-                        }
-                        else
-                        {
-                            foreach (BooksCustomersPendingSalesOrders a in CPSO)
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.orderno + "','" +
-                                                  String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
-                                                  a.party + "','" + a.product + "'," + a.pendingqty + "," + a.lineamount + ",'" + a.branch + "','" + a.userName + "')";
+                        cmd.ExecuteNonQuery();
 
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
+                        foreach (BooksCustomersPendingSalesOrders a in CPSO)
+                        {
+                            cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.orderno + "','" +
+                                              String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
+                                              a.party + "','" + a.product + "'," + a.pendingqty + "," + a.lineamount + ",'" + a.branch + "','" + a.userName + "')";
+
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                     }
                     catch (Exception ex)
                     {

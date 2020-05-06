@@ -13,7 +13,7 @@ namespace Wings21D.Models
         public string party { get; set; }
         public string product { get; set; }
         public double qty { get; set; }
-        public int lineamount { get; set; }
+        public double lineamount { get; set; }
         public string userName { get; set;  }
     }
 }

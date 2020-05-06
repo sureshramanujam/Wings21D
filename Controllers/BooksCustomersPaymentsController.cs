@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable SalesOrders = new DataTable();
+            DataTable Payments = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -35,8 +35,8 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "Select * from Books_CustomersPayments_Desktop_Table Where CustomerName='" + custName + "' " + 
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
-                    SalesOrders.TableName = "SalesOrders";
-                    da.Fill(SalesOrders);
+                    Payments.TableName = "Payments";
+                    da.Fill(Payments);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -46,7 +46,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    SalesOrders = SalesOrders
+                    Payments = Payments
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
@@ -80,38 +80,41 @@ namespace Wings21D.Controllers
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-
-            DateTime todayDate = DateTime.Now;
-            var dateOnly = todayDate.Date;
-
+            
             if (!String.IsNullOrEmpty(dbName))
             {
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select * From Books_CustomersPayments_Desktop_Table";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersPayments_Desktop_Table'";
                 da.SelectCommand = cmd;
-                da.Fill(dt);                
+                dt.Clear();
+                da.Fill(dt);
+                con.Close();
 
                 if (dt.Rows.Count > 0)
                 {
+                    con.Open();
                     cmd.CommandText = "Delete From Books_CustomersPayments_Desktop_Table";
                     cmd.ExecuteNonQuery();
                     con.Close();
+                    con.Open();
+                    foreach (BooksCustomersPayments a in CSP)
+                    {
+                        cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.account + "','" + a.voucherno +
+                                          "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
+                                          a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    con.Close();
+
                 }
                 else {
                     try
                     {
                         con.Open();
-
-                        cmd.CommandText = "Select name from sys.tables where name='Books_CustomersPayments_Desktop_Table'";
-                        da.SelectCommand = cmd;
-                        dt.Clear();
-                        da.Fill(dt);
-
-                        if (dt.Rows.Count == 0)
-                        {
-                            cmd.CommandText = "Create Table Books_CustomersPayments_Desktop_Table (" +
+                        cmd.CommandText = "Create Table Books_CustomersPayments_Desktop_Table (" +
                                                "CustomerName nvarchar(265) null," +
                                                "VoucherNumber nchar(100) null," +
                                                "VoucherDate date null," +
@@ -120,19 +123,16 @@ namespace Wings21D.Controllers
                                                "AgainstInvoiueNumber nchar(100) null," +
                                                "NetAmount decimal(18,2) null," +
                                                "Username nvarchar(265) null)";
-                        }
-                        else
+                        cmd.ExecuteNonQuery();
+                        foreach (BooksCustomersPayments a in CSP)
                         {
-                            foreach (BooksCustomersPayments a in CSP)
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.account + "','" + a.voucherno +
-                                                  "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
-                                                  a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.account + "','" + a.voucherno +
+                                              "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
+                                              a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
 
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                     }
                     catch (Exception ex)
                     {
