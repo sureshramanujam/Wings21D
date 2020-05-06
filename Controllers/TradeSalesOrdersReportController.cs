@@ -47,7 +47,7 @@ namespace Wings21D.Controllers
                                       "Convert(varchar,TransactionDate,23)<='" + toDate + "' And " +
                                       "Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
-                                      "Order By OrderDate Desc, DocumentNo";
+                                      "Order By OrderDate, DocumentNo";
 
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";

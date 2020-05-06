@@ -41,9 +41,7 @@ namespace Wings21D.Controllers
                                       "Where Convert(varchar,TransactionDate,23)>='" + fromDate + "' And " +
                                       "Convert(varchar,TransactionDate,23)<='" + toDate + "' And " +
                                       "Username='" + userName + "' " +
-                                      "Order By CollectionDate Desc, DocumentNo";
-                                      //"Where Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' " +
-
+                                      "Order By CollectionDate, DocumentNo";
 
                     da.SelectCommand = cmd;
                     ChequeCollections.TableName = "ChequeCollections";

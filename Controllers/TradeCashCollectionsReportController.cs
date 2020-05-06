@@ -40,7 +40,7 @@ namespace Wings21D.Controllers
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From CashCollections_Table " + "Where Convert(varchar,TransactionDate,23) >= '" + String.Format("{0:yyyy-MM-dd}", startDate) + "' And " +
                                       "Convert(varchar,TransactionDate,23) <= '" + String.Format("{0:yyyy-MM-dd}", endDate) + "' And " + " Username='" + userName + "' " +
-                                      "Order By CollectionDate Desc, DocumentNo";
+                                      "Order By CollectionDate, DocumentNo";
 
                     da.SelectCommand = cmd;
                     CashCollections.TableName = "CashCollections";
