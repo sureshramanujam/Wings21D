@@ -33,7 +33,7 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
-                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', " +
+                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', CustomerName" +
                                       "Amount, ChequeNumber, Format(ChequeDate,'dd-MMM-yyyy') As 'ChequeDate', " +
                                       "RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
