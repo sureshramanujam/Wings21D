@@ -34,7 +34,7 @@ namespace Wings21D.Controllers
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "With SalesOrdersList As( " +
-                                        "Select a.DocumentNo, TransactionDate As 'OrderDate', " +
+                                        "Select a.DocumentNo,  Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate', " +
                                         "a.CustomerName, a.ItemName, b.RatePerPiece, b.RatePerPack, a.QuantityInPieces, a.QuantityInPacks, " +
                                         "(a.QuantityInPieces*b.RatePerPiece) As 'AmtPcs', (a.QuantityInPacks*b.RatePerPack) As 'AmtPacks', " +
                                         "TransactionRemarks, DownloadedFlag, a.Username " +
