@@ -33,13 +33,31 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
+                    cmd.CommandText = "With SalesOrdersList As( " +
+                                        "Select a.DocumentNo, TransactionDate As 'OrderDate', " +
+                                        "a.CustomerName, a.ItemName, b.RatePerPiece, b.RatePerPack, a.QuantityInPieces, a.QuantityInPacks, " +
+                                        "(a.QuantityInPieces*b.RatePerPiece) As 'AmtPcs', (a.QuantityInPacks*b.RatePerPack) As 'AmtPacks', " +
+                                        "TransactionRemarks, DownloadedFlag, a.Username " +
+                                        "From Trade_SalesOrder_Table a " +
+                                        "Left Join Trade_Items_Table b on a.ItemName=b.ItemName " +
+                                      ") " +
+                                      "Select DocumentNo, OrderDate, CustomerName, Sum(QuantityInPieces+QuantityInPacks) As 'TotalQty', " +
+                                      "Sum(AmtPcs+AmtPacks) As 'TotalAmount' ," +
+                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +
+                                      "From SalesOrdersList " +
+                                      "Where Convert(varchar,OrderDate,23)>='" + fromDate + "' And " +
+                                      "Convert(varchar,OrderDate,23)<='" + toDate + "' And " +
+                                      "Username='" + userName + "' " +
+                                      "Group by DocumentNo, OrderDate, CustomerName, TransactionRemarks, Username " +
+                                      "Order By OrderDate, DocumentNo";
+
                     /*
                     cmd.CommandText = "select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
                                       "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() +
                                       "' Order By a.DocumentNo";
                     */
-
+                    /*
                     cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'OrderDate', " +
                                       "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As DownloadedFlag " +
                                       "From Trade_SalesOrder_Table " +
@@ -48,6 +66,7 @@ namespace Wings21D.Controllers
                                       "Username='" + userName + "' " +
                                       "Group by DocumentNo, TransactionDate " +
                                       "Order By OrderDate, DocumentNo";
+                    */
 
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
