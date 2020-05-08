@@ -62,10 +62,16 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
+            }
+
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -74,6 +80,24 @@ namespace Wings21D.Controllers
 
             if (!String.IsNullOrEmpty(dbName))
             {
+                if (!String.IsNullOrEmpty(uploadAll))
+                {
+                    if (uploadAll.Trim().ToLower() == "true")
+                    {
+                        try
+                        {
+                            con.Open();
+                            cmd.CommandText = "Delete from Trade_Locations_Table";
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
+                    }
+                }
+
                 try
                 {
                     con.Open();

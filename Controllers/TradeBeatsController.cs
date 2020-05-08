@@ -61,29 +61,56 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
-            try
+            if (!String.IsNullOrEmpty(uploadAll))
             {
-                con.Open();
-                foreach (TradeBeats bts in beats)
+                if (uploadAll.Trim().ToLower() == "true")
                 {
-                    cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + bts.beatName + "')";
-                    cmd.ExecuteNonQuery();
+                    try
+                    {
+                        con.Open();
+                        cmd.CommandText = "Delete from Trade_Beats_Table";
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
                 }
-                con.Close();
             }
-            catch (Exception ex)
+
+            if (!String.IsNullOrEmpty(dbName))
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                try
+                {
+                    con.Open();
+                    foreach (TradeBeats bts in beats)
+                    {
+                        cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + bts.beatName + "')";
+                        cmd.ExecuteNonQuery();
+                    }
+                    con.Close();
+                }
+                catch (Exception ex)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                }
             }
 
             return new HttpResponseMessage(HttpStatusCode.Created);

@@ -86,6 +86,7 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             //byte[] byteArray = Convert.FromBase64String(jsonData);
             //string customersInfo = System.Text.Encoding.UTF8.GetString(byteArray);
@@ -97,11 +98,34 @@ namespace Wings21D.Controllers
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+
             if (!String.IsNullOrEmpty(dbName))
             {
-                SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-                SqlCommand cmd = new SqlCommand();
-                cmd.Connection = con;
+                if (!String.IsNullOrEmpty(uploadAll))
+                {
+                    if (uploadAll.Trim().ToLower() == "true")
+                    {
+                        try
+                        {
+                            con.Open();
+                            cmd.CommandText = "Delete from Trade_Customers_Table";
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
+                    }
+                }
 
                 try
                 {
