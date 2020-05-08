@@ -128,7 +128,7 @@ namespace Wings21D.Controllers
                                               "Username nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
 
-                            foreach (BooksCustomersDeliveries a in BCD)
+                            foreach (BooksCustomersDeliveriesDesktop a in BCD)
                             {
                                 cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
                                                   String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
