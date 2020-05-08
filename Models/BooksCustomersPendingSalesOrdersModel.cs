@@ -12,8 +12,8 @@ namespace Wings21D.Models
         public string DueDate { get; set; }
         public string CustomerName { get; set; }
         public string ProductName { get; set; }
-        public int PendingQuantity { get; set; }
-        public int LineAmount { get; set; }
+        public double PendingQuantity { get; set; }
+        public double LineAmount { get; set; }
         public string BranchName { get; set; }
         public string Username { get; set;  }
     }

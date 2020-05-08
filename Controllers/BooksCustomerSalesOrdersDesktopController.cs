@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Wings21D.Controllers
 {
-    public class BooksCustomersDeliveriesController : ApiController
+    public class BooksCustomerSalesOrdersDesktopController : ApiController
     {
 
         // GET api/<controller>
@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable Deliveries = new DataTable();
+            DataTable DesktopSalesOrders = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -32,11 +32,11 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersDeliveries_Desktop_Table Where CustomerName='" + custName + "' " + 
-                                      "Order by OrderDate, OrderNumer";
+                    cmd.CommandText = "Select * from Books_CustomersSalesOrdersBooked_Desktop_Table Where CustomerName='" + custName + "' " + 
+                                      "Order by OrderDate, OrderNumber";
                     da.SelectCommand = cmd;
-                    Deliveries.TableName = "Deliveries";
-                    da.Fill(Deliveries);
+                    DesktopSalesOrders.TableName = "DesktopSalesOrders";
+                    da.Fill(DesktopSalesOrders);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -46,7 +46,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    Deliveries = Deliveries
+                    DesktopSalesOrders = DesktopSalesOrders
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
@@ -66,7 +66,7 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<BooksCustomersDeliveries> BCD)
+        public HttpResponseMessage Post(List<BooksCustomersSalesOrdersDesktop> CSOB)
         {
             var re = Request;
             var headers = re.Headers;
@@ -80,14 +80,16 @@ namespace Wings21D.Controllers
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-            
+
+            DateTime todayDate = DateTime.Now;
+            var dateOnly = todayDate.Date;
+
             if (!String.IsNullOrEmpty(dbName))
             {
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-
-                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersDeliveries_Desktop_Table'";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersSalesOrdersBooked_Desktop_Table'";
                 da.SelectCommand = cmd;
                 dt.Clear();
                 da.Fill(dt);
@@ -96,59 +98,58 @@ namespace Wings21D.Controllers
                 if (dt.Rows.Count > 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersDeliveries_Desktop_Table";
+                    cmd.CommandText = "Delete From Books_CustomersSalesOrdersBooked_Desktop_Table";
                     cmd.ExecuteNonQuery();
                     con.Close();
-
                     con.Open();
-
-                    foreach(BooksCustomersDeliveries a in BCD)
+                    
+                    foreach (BooksCustomersSalesOrdersDesktop a in CSOB)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
-                                                 String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
-                                                 a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
+
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
                 }
-                else 
-                {   
-                        try
-                        {
-                            con.Open();
-                           
-                            cmd.CommandText = "Create Table Books_CustomersDeliveries_Desktop_Table (" +
+                else
+                {
+                    try
+                    {
+                        con.Open();
+                        cmd.CommandText = "Create Table Books_CustomersSalesOrdersBooked_Desktop_Table (" +
                                               "OrderNumber nchar(100) null," +
-                                              "DCNumber nchar(100) null," +
-                                              "DCDate date null," +
+                                              "OrderDate date null," +
+                                              "DueDate date null," +
                                               "CustomerName nvarchar(265) null," +
                                               "ProductName nvarchar(265) null," +
-                                              "Quantity decimal(18,2) null," +
+                                              "BookedQty decimal(18,2) null," +
                                               "LineAmount decimal(18,2) null," +
                                               "Username nvarchar(265) null)";
-                            cmd.ExecuteNonQuery();
-
-                            foreach (BooksCustomersDeliveries a in BCD)
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
-                                                  String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
-                                                  a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception ex)
+                        cmd.ExecuteNonQuery();
+                        foreach (BooksCustomersSalesOrdersDesktop a in CSOB)
                         {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
+
+                            cmd.ExecuteNonQuery();
                         }
-                        return new HttpResponseMessage(HttpStatusCode.Created);
+                        con.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
+                return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-            return new HttpResponseMessage(HttpStatusCode.Created);
         }
 
         // PUT api/<controller>/5

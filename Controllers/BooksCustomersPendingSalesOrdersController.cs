@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable SalesOrders = new DataTable();
+            DataTable DestopPendingSalesOrders = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -35,8 +35,8 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "Select * from Books_CustomersPendingSalesOrder_Desktop_Table Where CustomerName='" + custName + "' " + 
                                       "Order by OrderDate, OrderNumber";
                     da.SelectCommand = cmd;
-                    SalesOrders.TableName = "SalesOrders";
-                    da.Fill(SalesOrders);
+                    DestopPendingSalesOrders.TableName = "DestopPendingSalesOrders";
+                    da.Fill(DestopPendingSalesOrders);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -46,7 +46,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    SalesOrders = SalesOrders
+                    DestopPendingSalesOrders = DestopPendingSalesOrders
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
