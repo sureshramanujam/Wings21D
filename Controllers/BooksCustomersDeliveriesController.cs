@@ -104,10 +104,9 @@ namespace Wings21D.Controllers
 
                     foreach(BooksCustomersDeliveries a in BCD)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.orderno + "','" + a.dcno + "','" +
-                                          String.Format("{0:yyyy-MM-dd}", a.date) + "','" + a.party + "','" +
-                                          a.product + "'," + a.qty + "," + a.lineamount + ",'" + a.userName + "')";
-
+                        cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
+                                                 String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
+                                                 a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
@@ -131,9 +130,9 @@ namespace Wings21D.Controllers
 
                             foreach (BooksCustomersDeliveries a in BCD)
                             {
-                                cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.orderno + "','" + a.dcno + "','" +
-                                                  String.Format("{0:yyyy-MM-dd}", a.date) + "','" + a.party + "','" +
-                                                  a.product + "'," + a.qty + "," + a.lineamount + ",'" + a.userName + "')";
+                                cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
+                                                  String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
+                                                  a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
                                 cmd.ExecuteNonQuery();
                             }
                             con.Close();

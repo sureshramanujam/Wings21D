@@ -101,9 +101,9 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (BooksCustomersPayments a in CSP)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.account + "','" + a.voucherno +
-                                          "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
-                                          a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
                     }
@@ -126,11 +126,12 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
                         foreach (BooksCustomersPayments a in CSP)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.account + "','" + a.voucherno +
-                                              "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
-                                              a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
+
                         }
                         con.Close();
                     }

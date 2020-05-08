@@ -104,9 +104,10 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (BooksCustomersPendingSalesOrders a in CPSO)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.orderno + "','" +
-                                          String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
-                                          a.party + "','" + a.product + "'," + a.pendingqty + "," + a.lineamount + ",'" + a.branch + "','" + a.userName + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                          a.CustomerName + "','" + a.ProductName + "'," + a.PendingQuantity + "," + a.LineAmount + ",'" + a.BranchName + "','" + a.Username
+                                          + "')";
 
                         cmd.ExecuteNonQuery();
                     }
@@ -131,11 +132,13 @@ namespace Wings21D.Controllers
 
                         foreach (BooksCustomersPendingSalesOrders a in CPSO)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.orderno + "','" +
-                                              String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
-                                              a.party + "','" + a.product + "'," + a.pendingqty + "," + a.lineamount + ",'" + a.branch + "','" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersPendingSalesOrder_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                              String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                              a.CustomerName + "','" + a.ProductName + "'," + a.PendingQuantity + "," + a.LineAmount + ",'" + a.BranchName + "','" + a.Username
+                                              + "')";
 
                             cmd.ExecuteNonQuery();
+
                         }
                         con.Close();
                     }

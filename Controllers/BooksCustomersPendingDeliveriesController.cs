@@ -101,9 +101,9 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (BooksCustomersPendingDeliveries a in BCPD)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.party + "','" + a.product + "','" +
-                                          a.batch + "','" + a.dcno + "','" + a.invoiceno + "'," + a.billedqty + ",'" + a.branch + "'," + a.lineamount +
-                                          ",'" + a.userName + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.CustomerName + "','" + a.ProductName + "','" +
+                                          a.BatchName + "','" + a.DCNumber + "','" + a.InvoiceNumber + "'," + a.BilledQuantity + ",'" + a.BranchName + "'," + a.LineAmount +
+                                          ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
                     }
@@ -128,9 +128,9 @@ namespace Wings21D.Controllers
 
                         foreach (BooksCustomersPendingDeliveries a in BCPD)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.party + "','" + a.product + "','" +
-                                              a.batch + "','" + a.dcno + "','" + a.invoiceno + "'," + a.billedqty + ",'" + a.branch + "'," + a.lineamount +
-                                              ",'" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.CustomerName + "','" + a.ProductName + "','" +
+                                          a.BatchName + "','" + a.DCNumber + "','" + a.InvoiceNumber + "'," + a.BilledQuantity + ",'" + a.BranchName + "'," + a.LineAmount +
+                                          ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
                         }

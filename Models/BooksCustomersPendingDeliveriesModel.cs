@@ -7,14 +7,14 @@ namespace Wings21D.Models
 {
     public class BooksCustomersPendingDeliveries
     {
-        public string party { get; set; }
-        public string product { get; set; }
-        public string batch { get; set; }
-        public string dcno { get; set; }
-        public string invoiceno { get; set; }
-        public double billedqty { get; set; }
-        public string branch { get; set; }
-        public double lineamount { get; set; }
-        public string userName { get; set;  }
+        public string CustomerName { get; set; }
+        public string ProductName { get; set; }
+        public string BatchName { get; set; }
+        public string DCNumber { get; set; }
+        public string InvoiceNumber { get; set; }
+        public double BilledQuantity { get; set; }
+        public string BranchName { get; set; }
+        public double LineAmount { get; set; }
+        public string Username { get; set;  }
     }
 }

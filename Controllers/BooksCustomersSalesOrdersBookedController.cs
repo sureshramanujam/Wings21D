@@ -105,9 +105,9 @@ namespace Wings21D.Controllers
                     
                     foreach (BooksCustomersSalesOrdersBooked a in CSOB)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.orderno + "','" +
-                                          String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
-                                          a.party + "','" + a.product + "'," + a.bookedQty + "," + a.lineamount + ",'" + a.userName + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
                     }
@@ -130,9 +130,9 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
                         foreach (BooksCustomersSalesOrdersBooked a in CSOB)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.orderno + "','" +
-                                              String.Format("{0:yyyy-MM-dd}", a.date) + "','" + String.Format("{0:yyyy-MM-dd}", a.duedate) + "','" +
-                                              a.party + "','" + a.product + "'," + a.bookedQty + "," + a.lineamount + ",'" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
                         }

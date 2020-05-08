@@ -102,6 +102,16 @@ namespace Wings21D.Controllers
                     cmd.ExecuteNonQuery();
                     con.Close();
                     con.Open();
+
+                    foreach (BooksCustomersReceipts a in CSR)
+                    {
+                        cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    con.Close();
                 }
                 else
                 {
@@ -121,9 +131,9 @@ namespace Wings21D.Controllers
 
                         foreach (BooksCustomersReceipts a in CSR)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.account + "','" + a.voucherno +
-                                              "','" + String.Format("{0:yyyy-MM-dd}", a.voucherdate) + "','" + a.paymentmode + "','" +
-                                              a.chequeno + "','" + a.againstinvno + "'," + a.netamount + ",'" + a.userName + "')";
+                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
                         }

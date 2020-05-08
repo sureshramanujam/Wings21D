@@ -7,13 +7,13 @@ namespace Wings21D.Models
 {
     public class BooksCustomersPayments
     {
-        public string account { get; set; }
-        public string voucherno{ get; set; }
-        public string voucherdate { get; set; }
-        public string paymentmode { get; set; }
-        public string chequeno { get; set; }
-        public string againstinvno { get; set; }
-        public double netamount{ get; set; }
-        public string userName { get; set;  }
+        public string CustomerName { get; set; }
+        public string VoucherNumber { get; set; }
+        public string VoucherDate { get; set; }
+        public string PaymentMode { get; set; }
+        public string ChequeNumber { get; set; }
+        public string AgainstInvoiceNumber { get; set; }
+        public double NetAmount { get; set; }
+        public string Username { get; set;  }
     }
 }
