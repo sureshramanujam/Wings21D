@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Wings21D.Controllers
 {
-    public class TradeGetSalesOrderLastNumberController : ApiController
+    public class BooksGetSalesOrderLastNumberController : ApiController
     {
 
         // GET api/<controller>
@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select Top 1 TransactionNo From Trade_SalesOrder_Table Where Username='" + userName + "' Order by TransactionNo Desc";
+                    cmd.CommandText = "Select Top 1 TransactionNo From Books_SalesOrder_Table Where Username='" + userName + "' Order by TransactionNo Desc";
 
                     da.SelectCommand = cmd;
                     LatestSalesOrder.TableName = "LatestSalesOrder";
@@ -43,13 +43,6 @@ namespace Wings21D.Controllers
                 {
                     return ex.ToString();
                 }
-                /*
-                var returnResponseObject = new
-                {
-                    LatestSalesOrder = LatestSalesOrder
-                };
-                */
-                //var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return LatestSalesOrder.Rows[0][0].ToString();
             }
             else
