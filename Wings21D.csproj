@@ -196,6 +196,7 @@
     <Compile Include="Controllers\BooksSalesOrderController.cs" />
     <Compile Include="Controllers\BooksSalesOrdersReportController.cs" />
     <Compile Include="Controllers\BooksGetSalesOrderLastNumberController.cs" />
+    <Compile Include="Controllers\TradeGetSalesOrderValueController.cs" />
     <Compile Include="Controllers\TradeGetSalesOrderLastNumberController.cs" />
     <Compile Include="Controllers\TradeSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrderController.cs" />
