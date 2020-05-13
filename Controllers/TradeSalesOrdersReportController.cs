@@ -13,7 +13,6 @@ namespace Wings21D.Controllers
 {
     public class TradeSalesOrdersReportController : ApiController
     {
-
         // GET api/<controller>
         public HttpResponseMessage Get(string dbName, string fromDate, string toDate, string userName)
         {
@@ -89,7 +88,6 @@ namespace Wings21D.Controllers
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
             }
         }
     }
