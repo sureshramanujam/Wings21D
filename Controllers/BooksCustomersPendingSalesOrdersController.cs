@@ -112,6 +112,7 @@ namespace Wings21D.Controllers
 
                         cmd.ExecuteNonQuery();
                         orderNumbers += a.OrderNumber + "$";
+                        orderNumbers = orderNumbers.Replace('\\', ' ');
                     }
                     con.Close();
                 }
@@ -141,6 +142,7 @@ namespace Wings21D.Controllers
 
                             cmd.ExecuteNonQuery();
                             orderNumbers += a.OrderNumber + "$";
+                            orderNumbers = orderNumbers.Replace('\\', ' ');
 
                         }
                         con.Close();

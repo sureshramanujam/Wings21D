@@ -112,6 +112,7 @@ namespace Wings21D.Controllers
 
                         cmd.ExecuteNonQuery();
                         receiptNumbers += a.VoucherNumber + "$";
+                        receiptNumbers = receiptNumbers.Replace('\\', ' ');
                     }
                     con.Close();
                 }
@@ -139,6 +140,7 @@ namespace Wings21D.Controllers
 
                             cmd.ExecuteNonQuery();
                             receiptNumbers += a.VoucherNumber + "$";
+                            receiptNumbers = receiptNumbers.Replace('\\', ' ');
                         }
                         con.Close();
                     }

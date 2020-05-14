@@ -108,6 +108,7 @@ namespace Wings21D.Controllers
 
                         cmd.ExecuteNonQuery();
                         paymentNumbers += a.VoucherNumber + "$";
+                        paymentNumbers = paymentNumbers.Replace('\\', ' ');
                     }
                     con.Close();
                 }
@@ -134,6 +135,7 @@ namespace Wings21D.Controllers
 
                             cmd.ExecuteNonQuery();
                             paymentNumbers += a.VoucherNumber + "$";
+                            paymentNumbers = paymentNumbers.Replace('\\', ' ');
 
                         }
                         con.Close();

@@ -111,6 +111,7 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
 
                         deliveryNumbers += a.DCNumber + "$";
+                        deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
                     }
                     con.Close();
                 }
@@ -138,7 +139,8 @@ namespace Wings21D.Controllers
                                                   a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
                                 cmd.ExecuteNonQuery();
                                 deliveryNumbers += a.DCNumber + "$";
-                            }
+                                deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
+                        }
                             con.Close();
                         }
                         catch (Exception ex)
