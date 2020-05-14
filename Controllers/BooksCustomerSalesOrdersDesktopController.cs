@@ -66,7 +66,7 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<BooksCustomersSalesOrdersDesktop> CSOB)
+        public string Post(List<BooksCustomersSalesOrdersDesktop> CSOB)
         {
             var re = Request;
             var headers = re.Headers;
@@ -95,6 +95,8 @@ namespace Wings21D.Controllers
                 da.Fill(dt);
                 con.Close();
 
+                string orderNumbers = String.Empty;
+
                 if (dt.Rows.Count > 0)
                 {
                     con.Open();
@@ -110,6 +112,7 @@ namespace Wings21D.Controllers
                                           a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
+                        orderNumbers += a.OrderNumber + "$";
                     }
                     con.Close();
                 }
@@ -128,38 +131,38 @@ namespace Wings21D.Controllers
                                               "LineAmount decimal(18,2) null," +
                                               "Username nvarchar(265) null)";
                         cmd.ExecuteNonQuery();
+
                         foreach (BooksCustomersSalesOrdersDesktop a in CSOB)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
-                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
-                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
+                            try
+                            {
+                                cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
+                                              String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
+                                              a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
 
-                            cmd.ExecuteNonQuery();
+                                cmd.ExecuteNonQuery();
+                                orderNumbers += a.OrderNumber + "$";
+                            }
+                            catch
+                            {
+
+                            }
                         }
                         con.Close();
                     }
                     catch (Exception ex)
                     {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        //return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        return "Unable to insert data.";
                     }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    return "Error";
                 }
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                return orderNumbers;
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return "Database not found.";
             }
-        }
-
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
         }
     }
 }

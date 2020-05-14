@@ -66,11 +66,12 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<BooksCustomersPayments> CSP)
+        public string Post(List<BooksCustomersPayments> CSP)
         {
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            string paymentNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -106,11 +107,12 @@ namespace Wings21D.Controllers
                                           a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
+                        paymentNumbers += a.VoucherNumber + "$";
                     }
                     con.Close();
-
                 }
-                else {
+                else 
+                {
                     try
                     {
                         con.Open();
@@ -131,21 +133,22 @@ namespace Wings21D.Controllers
                                           a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
+                            paymentNumbers += a.VoucherNumber + "$";
 
                         }
                         con.Close();
                     }
                     catch (Exception ex)
                     {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        return "Unable to insert data.";
                     }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    return paymentNumbers;
                 }
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                return paymentNumbers;
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return "Database error.";
             }
         }
 

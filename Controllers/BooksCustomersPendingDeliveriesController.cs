@@ -66,11 +66,12 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<BooksCustomersPendingDeliveries> BCPD)
+        public string Post(List<BooksCustomersPendingDeliveries> BCPD)
         {
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            string deliveryNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -106,6 +107,7 @@ namespace Wings21D.Controllers
                                           ",'" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
+                        deliveryNumbers += a.DCNumber + "$";
                     }
                     con.Close();
                 }
@@ -133,20 +135,21 @@ namespace Wings21D.Controllers
                                           ",'" + a.Username + "')";
 
                             cmd.ExecuteNonQuery();
+                            deliveryNumbers += a.DCNumber + "$";
                         }
                         con.Close();
                     }
                     catch (Exception ex)
                     {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        return "Unable to insert data.";
                     }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    return deliveryNumbers;
                 }
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                return deliveryNumbers;
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return "Database error.";
             }
         }
 

@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable DesktopDeliveries = new DataTable();
+            DataTable DesktopDeliveries = new DataTable();            
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -66,11 +66,12 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<BooksCustomersDeliveriesDesktop> BCD)
+        public string Post(List<BooksCustomersDeliveriesDesktop> BCD)
         {
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            string deliveryNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -108,6 +109,8 @@ namespace Wings21D.Controllers
                                                  String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
                                                  a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
                         cmd.ExecuteNonQuery();
+
+                        deliveryNumbers += a.DCNumber + "$";
                     }
                     con.Close();
                 }
@@ -134,21 +137,22 @@ namespace Wings21D.Controllers
                                                   String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
                                                   a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
                                 cmd.ExecuteNonQuery();
+                                deliveryNumbers += a.DCNumber + "$";
                             }
                             con.Close();
                         }
                         catch (Exception ex)
                         {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            return "Unable to insert data.";
                         }
-                        return new HttpResponseMessage(HttpStatusCode.Created);
+                        return deliveryNumbers;
                 }
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return "Databae Error.";
             }
-            return new HttpResponseMessage(HttpStatusCode.Created);
+            return deliveryNumbers;
         }
 
         // PUT api/<controller>/5

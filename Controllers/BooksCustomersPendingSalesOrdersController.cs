@@ -66,11 +66,12 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>               
-        public HttpResponseMessage Post(List<BooksCustomersPendingSalesOrders> CPSO)
+        public string Post(List<BooksCustomersPendingSalesOrders> CPSO)
         {
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            string orderNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -110,6 +111,7 @@ namespace Wings21D.Controllers
                                           + "')";
 
                         cmd.ExecuteNonQuery();
+                        orderNumbers += a.OrderNumber + "$";
                     }
                     con.Close();
                 }
@@ -138,21 +140,22 @@ namespace Wings21D.Controllers
                                               + "')";
 
                             cmd.ExecuteNonQuery();
+                            orderNumbers += a.OrderNumber + "$";
 
                         }
                         con.Close();
                     }
                     catch (Exception ex)
                     {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        return "Unable to insert data.";
                     }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    return orderNumbers;
                 }
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                return orderNumbers;
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                return "Database Error.";
             }
         }
 
