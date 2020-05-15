@@ -102,7 +102,7 @@ namespace Wings21D.Controllers
                 {
                     con.Open();
 
-                    string transRemarks = soe.transactionRemarks.Replace("\\n", "");
+                    string transRemarks = myCE.transactionRemarks.Replace("\\n", "");
 
                     cmd.CommandText = "Insert Into CashCollections_Table Values(" +
                                       //"(Select ISNULL(Max(TransactionNo),0)+1 From CashCollections_Table Where Year(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}",todayDate.Date) + "')," +
