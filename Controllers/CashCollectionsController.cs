@@ -102,12 +102,14 @@ namespace Wings21D.Controllers
                 {
                     con.Open();
 
+                    string transRemarks = soe.transactionRemarks.Replace("\\n", "");
+
                     cmd.CommandText = "Insert Into CashCollections_Table Values(" +
                                       //"(Select ISNULL(Max(TransactionNo),0)+1 From CashCollections_Table Where Year(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}",todayDate.Date) + "')," +
                                       "(Select ISNULL(Max(TransactionNo),0)+1 From CashCollections_Table), " +
                                       "'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "',  null, '" + myCE.customerName + "', "
                                       + Convert.ToDouble(myCE.collectionAmount) + ", '" +
-                                      myCE.transactionRemarks + "','" + myCE.userName + "','CR-M-',0, " +
+                                      transRemarks + "','" + myCE.userName + "','CR-M-',0, " +
                                       //"'CR-M-' +  CAST((Select ISNULL(Max(TransactionNo),0)+1 From CashCollections_Table Where YEAR(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}", todayDate.Date) + "') AS varchar), '" + 
                                       "'CR-M-' +  CAST((Select ISNULL(Max(TransactionNo),0)+1 From CashCollections_Table) AS varchar), '" +
                                       myCE.againstInvoiceNumber + "')";

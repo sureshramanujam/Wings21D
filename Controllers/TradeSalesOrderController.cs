@@ -102,6 +102,7 @@ namespace Wings21D.Controllers
                     docNumberAdapter.Fill(newDocumentNumber);
 
                     String sProfitCenter = String.Empty;
+                    string transRemarks = String.Empty;
 
                     foreach (SalesOrderEntry soe in mySO)
                     {
@@ -110,9 +111,11 @@ namespace Wings21D.Controllers
                         else
                             sProfitCenter = soe.profitCenterName;
 
+                        transRemarks = soe.transactionRemarks.Replace("\\n", "");
+
                         cmd.CommandText = "Insert Into Trade_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.itemName + "'," +
-                                          soe.quantityInPieces + "," + soe.quantityInPacks + ",'" + soe.transactionRemarks + "','OR-M-'," +
+                                          soe.quantityInPieces + "," + soe.quantityInPacks + ",'" + transRemarks + "','OR-M-'," +
                                           "'OR-M-" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +  "',0,'" + soe.userName + "','" +
                                           sProfitCenter + "')";
 

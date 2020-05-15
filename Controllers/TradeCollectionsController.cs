@@ -94,6 +94,8 @@ namespace Wings21D.Controllers
                 try
                 {
                     con.Open();
+                    
+                    string transRemarks = myCE.transactionRemarks.Replace("\\n", "");
 
                     cmd.CommandText = "Insert Into Collections_Table Values(" +
                                       //"(Select ISNULL(Max(TransactionNo),0)+1 From Collections_Table Where YEAR(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}", todayDate.Date) + "')," +
@@ -101,7 +103,7 @@ namespace Wings21D.Controllers
                                       "'" + String.Format("{0:yyyy-MM-dd}",todayDate.Date) +"',null, '" + myCE.customerName + "', "
                                       + Convert.ToDouble(myCE.cashAmount) +
                                       ", '" + myCE.chequeNumber + "', " +
-                                      "'" + String.Format("{0:yyyy-MM-dd}", myCE.chequeDate) + "','" +  myCE.againstInvoiceNumber +  "','" + myCE.transactionRemarks + "','" + myCE.userName + "','CB-M-',0, " +
+                                      "'" + String.Format("{0:yyyy-MM-dd}", myCE.chequeDate) + "','" +  myCE.againstInvoiceNumber +  "','" + transRemarks + "','" + myCE.userName + "','CB-M-',0, " +
                                       //"'CB-M-' +  CAST((Select ISNULL(Max(TransactionNo),0)+1 From Collections_Table Where YEAR(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}", todayDate.Date) + "') AS varchar), " +
                                       "'CB-M-' +  CAST((Select ISNULL(Max(TransactionNo),0)+1 From Collections_Table) AS varchar), " +
                                       myCE.chequeAmount + ")";

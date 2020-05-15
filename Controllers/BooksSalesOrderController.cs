@@ -100,11 +100,17 @@ namespace Wings21D.Controllers
                     docNumberAdapter.SelectCommand = cmd;
                     docNumberAdapter.Fill(newDocumentNumber);
 
+                    string transRemarks = String.Empty;
+                        
+                        
+
                     foreach (BooksSalesOrderEntry soe in mySO)
                     {
+                        transRemarks = soe.transactionRemarks.Replace("\\n", "");
+
                         cmd.CommandText = "Insert Into Books_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.productName + "'," +
-                                          soe.quantity + ",'" + soe.transactionRemarks + "','GSO-M-'," +
+                                          soe.quantity + ",'" + transRemarks + "','GSO-M-'," +
                                           "'GSO-M-" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +  "',0,'" + soe.userName + "')";
 
                         cmd.ExecuteNonQuery();

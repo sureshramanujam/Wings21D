@@ -96,7 +96,7 @@ namespace Wings21D.Controllers
                 if (dt.Rows.Count > 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delet From Books_CustomersPendingDeliveries_Desktop_Table";
+                    cmd.CommandText = "Delete From Books_CustomersPendingDeliveries_Desktop_Table";
                     cmd.ExecuteNonQuery();
                     con.Close();
                     con.Open();
