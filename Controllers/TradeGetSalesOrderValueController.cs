@@ -38,7 +38,7 @@ namespace Wings21D.Controllers
                                         "From Trade_SalesOrder_Table a " +
                                         "Left Join Trade_Items_Table b on a.ItemName = b.ItemName " +
                                       ")Select Sum(AmtPcs+AmtPacks) As 'OrderValue' From SalesOrdersList Where Username = '" + userName + "' " +
-                                      "And Convert(varchar,TranscationDate,23)='" + String.Format("{0:yyyy-MM-dd}", asonDate) + "'";
+                                      "And Convert(varchar,TransactionDate,23)='" + String.Format("{0:yyyy-MM-dd}", asonDate) + "'";
 
 
                     da.SelectCommand = cmd;
