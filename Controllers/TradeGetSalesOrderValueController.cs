@@ -11,13 +11,14 @@ namespace Wings21D.Controllers
 {
     public class TradeGetSalesOrderValueController : ApiController
     {   
-        public string Get(string dbName, string userName)
+        public string Get(string dbName, string userName, string asAtDate)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesOrders = new DataTable();
+            DateTime asonDate = Convert.ToDateTime(asAtDate);
 
             if (!String.IsNullOrEmpty(dbName))
             {
@@ -36,7 +37,9 @@ namespace Wings21D.Controllers
                                         "TransactionRemarks, DownloadedFlag, a.Username " +
                                         "From Trade_SalesOrder_Table a " +
                                         "Left Join Trade_Items_Table b on a.ItemName = b.ItemName " +
-                                      ")Select Sum(AmtPcs+AmtPacks) As 'OrderValue' From SalesOrdersList Where Username = '" + userName + "'";
+                                      ")Select Sum(AmtPcs+AmtPacks) As 'OrderValue' From SalesOrdersList Where Username = '" + userName + "' " +
+                                      "And Convert(varchar,TranscationDate,23)='" + String.Format("{0:yyyy-MM-dd}", asonDate) + "'";
+
 
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
