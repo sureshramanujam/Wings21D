@@ -15,10 +15,9 @@ namespace Wings21D.Controllers
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesOrders = new DataTable();
-            DateTime asonDate = Convert.ToDateTime(asAtDate);
+            //DateTime asonDate = Convert.ToDateTime(asAtDate);
 
             if (!String.IsNullOrEmpty(dbName))
             {
@@ -28,43 +27,34 @@ namespace Wings21D.Controllers
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    //DateTime asonDate = DateTime.Parse(asAtDate);
-
+                    
                     cmd.CommandText = "With SalesOrdersList As (" +
-                                        "Select a.DocumentNo,  Format(TransactionDate, 'yyyy-MM-dd') As 'OrderDate', " +
+                                        "Select a.DocumentNo,  Convert(varchar,TransactionDate, 105) As 'OrderDate', " +
                                         "a.CustomerName, a.ItemName, b.RatePerPiece, b.RatePerPack, a.QuantityInPieces, a.QuantityInPacks, " +
                                         "(a.QuantityInPieces * b.RatePerPiece) As 'AmtPcs', (a.QuantityInPacks * b.RatePerPack) As 'AmtPacks', " +
                                         "TransactionRemarks, DownloadedFlag, a.Username " +
                                         "From Trade_SalesOrder_Table a " +
                                         "Left Join Trade_Items_Table b on a.ItemName = b.ItemName " +
                                       ")Select Sum(AmtPcs+AmtPacks) As 'OrderValue' From SalesOrdersList Where Username = '" + userName + "' " +
-                                      "And Convert(varchar,OrderDate,23) <= '" + String.Format("{0:yyyy-MM-dd}", asonDate) + "'";
-
+                                      "And OrderDate <= '" + asAtDate + "'";
 
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
                     da.Fill(SalesOrders);
                     con.Close();
+
+                    return SalesOrders.Rows[0][0].ToString();
                 }
                 catch (Exception ex)
                 {
-                    return "Connection error.";
+                    return ex.ToString();
                 }
-
-                return SalesOrders.Rows[0][0].ToString();
+                //return SalesOrders.Rows[0][0].ToString();
             }
             else
             {
                 return "Database not found.";
             }
-        }
-
-
-        // GET api/values/5
-
-        // POST api/values
-        public void Post([FromBody]string value)
-        {
         }
     }
 }
