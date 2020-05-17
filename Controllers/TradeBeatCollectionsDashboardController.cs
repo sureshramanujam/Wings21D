@@ -40,8 +40,7 @@ namespace Wings21D.Controllers
                                             "Select b.BeatName, (Sum(a.CashAmount)+Sum(a.ChequeAmount)) As 'Amount' " +
                                             "From Collections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
                                             "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' " +
-                                      ") Select BeatName, Sum(Amount) As 'CollectionAmount' from CollectionsList Group By BeatName Where Username = '" + userName + "' " +
-                                      "And OrderDate <= '" + asAtDate + "'";
+                                      ") Select BeatName, Sum(Amount) As 'CollectionAmount' from CollectionsList Group By BeatName Where Username = '" + userName + "' ";
 
                     da.SelectCommand = cmd;
                     BetaCollections.TableName = "BetaCollections";
