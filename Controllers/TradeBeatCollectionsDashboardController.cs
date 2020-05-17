@@ -31,16 +31,16 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "With CollectionsList As(" +
                                             "Select b.BeatName, Sum(a.Amount) As 'Amount' " +
                                             "From CashCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
-                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' " +
+                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
                                             "Union " +
                                             "Select b.BeatName, Sum(a.Amount) As 'Amount' " +
                                             "From ChequeCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
-                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' " +
+                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
                                             "Union " +
                                             "Select b.BeatName, (Sum(a.CashAmount)+Sum(a.ChequeAmount)) As 'Amount' " +
                                             "From Collections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
-                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' " +
-                                      ") Select BeatName, Sum(Amount) As 'CollectionAmount' from CollectionsList Group By BeatName Where Username = '" + userName + "' ";
+                                            "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
+                                      ") Select BeatName, Sum(Amount) As 'CollectionAmount' from CollectionsList Group By BeatName";
 
                     da.SelectCommand = cmd;
                     BetaCollections.TableName = "BetaCollections";
