@@ -16,8 +16,7 @@ namespace Wings21D.Controllers
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable BetaCollections = new DataTable();
-            //DateTime asonDate = Convert.ToDateTime(asAtDate);
+            DataTable BeatCollections = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName))
             {
@@ -30,21 +29,24 @@ namespace Wings21D.Controllers
                     
                     cmd.CommandText = "With CollectionsList As(" +
                                             "Select b.BeatName, Sum(a.Amount) As 'Amount' " +
-                                            "From CashCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
+                                            "From CashCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName " +
                                             "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
+                                            "Group by b.BeatName " +
                                             "Union " +
                                             "Select b.BeatName, Sum(a.Amount) As 'Amount' " +
-                                            "From ChequeCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
+                                            "From ChequeCollections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName " +                                            
                                             "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
+                                            "Group by b.BeatName " +
                                             "Union " +
                                             "Select b.BeatName, (Sum(a.CashAmount)+Sum(a.ChequeAmount)) As 'Amount' " +
-                                            "From Collections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName Group by b.BeatName " +
+                                            "From Collections_Table a Left Join Trade_Customers_Table b on a.CustomerName=b.CustomerName " +
                                             "Where Convert(varchar,TransactionDate,105) <= '" + asAtDate + "' And Username='" + userName + "' " +
+                                            "Group by b.BeatName " +
                                       ") Select BeatName, Sum(Amount) As 'CollectionAmount' from CollectionsList Group By BeatName";
 
                     da.SelectCommand = cmd;
-                    BetaCollections.TableName = "BetaCollections";
-                    da.Fill(BetaCollections);
+                    BeatCollections.TableName = "BeatCollections";
+                    da.Fill(BeatCollections);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -54,7 +56,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    BetaCollections = BetaCollections
+                    BeatCollections = BeatCollections
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
