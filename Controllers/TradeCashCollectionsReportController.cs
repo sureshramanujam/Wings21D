@@ -38,8 +38,8 @@ namespace Wings21D.Controllers
                     cmd.CommandText = "Select DocumentNo, Convert(varchar,TransactionDate,105) As 'CollectionDate', CustomerName, " +
                                       "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
-                                      "From CashCollections_Table " + 
-                                      "Where CollectionDate Between '" + fromDate + "' And '" + toDate +  "' And Username='" + userName + "' " +
+                                      "From CashCollections_Table " +
+                                      "Where Convert(varchar,TransactionDate,105) Between '" + fromDate + "' And '" + toDate +  "' And Username='" + userName + "' " +
                                       "Order By CollectionDate, DocumentNo";
 
                     da.SelectCommand = cmd;

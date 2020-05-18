@@ -38,7 +38,7 @@ namespace Wings21D.Controllers
                                       "RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber,  TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From ChequeCollections_Table " +
-                                      "Where CollectionDate Between '" + fromDate + "' And '" + toDate + "' And " +
+                                      "Where Convert(varchar,TransactionDate,105) Between '" + fromDate + "' And '" + toDate + "' And " +
                                       "Username='" + userName + "' " +
                                       "Order By CollectionDate, DocumentNo";
 
