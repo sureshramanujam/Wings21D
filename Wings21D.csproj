@@ -167,6 +167,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BooksCustomerBalanceController.cs" />
+    <Compile Include="Controllers\CompanyDetailsUpdaterController.cs" />
     <Compile Include="Controllers\BooksCustomersController.cs" />
     <Compile Include="Controllers\BooksGetPendingSalesOrdersController.cs" />
     <Compile Include="Controllers\BooksGetDesktopCustomersReceiptsController.cs" />
@@ -233,6 +234,7 @@
     <Compile Include="Models\BooksCustomersDeliveriesDesktopModel.cs" />
     <Compile Include="Models\ChequeCollectionsEntryModel.cs" />
     <Compile Include="Models\CashCollectionsEntryModel.cs" />
+    <Compile Include="Models\CompanyDetailsModel.cs" />
     <Compile Include="Models\DocumentNumbersModel.cs" />
     <Compile Include="Models\BooksSalesOrderEntryModel.cs" />
     <Compile Include="Models\TradeSalesOrderEntryModel.cs" />
