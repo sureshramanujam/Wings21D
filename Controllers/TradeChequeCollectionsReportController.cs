@@ -33,13 +33,12 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
-                    cmd.CommandText = "select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', CustomerName, " +
+                    cmd.CommandText = "select DocumentNo, Convert(varchar,TransactionDate,105) As 'CollectionDate', CustomerName, " +
                                       "Amount, ChequeNumber, Format(ChequeDate,'dd-MMM-yyyy') As 'ChequeDate', " +
                                       "RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber,  TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
                                       "From ChequeCollections_Table " +
-                                      "Where Convert(varchar,TransactionDate,23)>='" + fromDate + "' And " +
-                                      "Convert(varchar,TransactionDate,23)<='" + toDate + "' And " +
+                                      "Where CollectionDate Between '" + fromDate + "' And '" + toDate + "' And " +
                                       "Username='" + userName + "' " +
                                       "Order By CollectionDate, DocumentNo";
 

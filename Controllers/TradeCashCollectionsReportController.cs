@@ -35,11 +35,11 @@ namespace Wings21D.Controllers
                     DateTime endDate = DateTime.Parse(toDate);
 
 
-                    cmd.CommandText = "Select DocumentNo, Format(TransactionDate,'dd-MMM-yyyy') As 'CollectionDate', CustomerName, " +
+                    cmd.CommandText = "Select DocumentNo, Convert(varchar,TransactionDate,105) As 'CollectionDate', CustomerName, " +
                                       "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +
                                       "CASE WHEN DownloadedFlag > 0 THEN '1' ELSE '0' END As DownloadedFlag, Username " +
-                                      "From CashCollections_Table " + "Where Convert(varchar,TransactionDate,23) >= '" + String.Format("{0:yyyy-MM-dd}", startDate) + "' And " +
-                                      "Convert(varchar,TransactionDate,23) <= '" + String.Format("{0:yyyy-MM-dd}", endDate) + "' And " + " Username='" + userName + "' " +
+                                      "From CashCollections_Table " + 
+                                      "Where CollectionDate Between '" + fromDate + "' And '" + toDate +  "' And Username='" + userName + "' " +
                                       "Order By CollectionDate, DocumentNo";
 
                     da.SelectCommand = cmd;
