@@ -139,6 +139,7 @@ namespace Wings21D.Controllers
                             foreach (TradeItems titems in ti)
                             {
                                 titems.itemName = titems.itemName.Replace("'", "''");
+                                titems.productName = titems.productName.Replace("'", "''");
                                 cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
                                 titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
                                 "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
@@ -159,6 +160,7 @@ namespace Wings21D.Controllers
                     foreach (TradeItems titems in ti)
                     {
                         titems.itemName = titems.itemName.Replace("'", "''");
+                        titems.productName = titems.productName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
                         titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
                         "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
