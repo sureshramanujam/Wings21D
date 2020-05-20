@@ -95,7 +95,7 @@ namespace Wings21D.Controllers
                     con.Open();
 
                     string transRemarks = myCE.transactionRemarks.Replace("\\n", "");
-
+                    myCE.customerName = myCE.customerName.Replace("'", "''");
                     cmd.CommandText = "Insert Into ChequeCollections_Table Values(" +
                                       //"(Select ISNULL(Max(TransactionNo),0)+1 From ChequeCollections_Table Where year(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}", todayDate.Date) + "')," +
                                       "(Select ISNULL(Max(TransactionNo),0)+1 From ChequeCollections_Table), " +

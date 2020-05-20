@@ -112,6 +112,8 @@ namespace Wings21D.Controllers
                             sProfitCenter = soe.profitCenterName;
 
                         transRemarks = soe.transactionRemarks.Replace("\\n", "");
+                        soe.itemName = soe.itemName.Replace("'", "''");
+                        soe.customerName = soe.customerName.Replace("'", "''");
 
                         cmd.CommandText = "Insert Into Trade_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.itemName + "'," +

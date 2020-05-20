@@ -97,7 +97,8 @@ namespace Wings21D.Controllers
                     }
 
                     foreach (BooksCustomerBalance bcb in customerBalance)
-                    {   
+                    {
+                        bcb.customerName = bcb.customerName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
                                           + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
                         cmd.ExecuteNonQuery();

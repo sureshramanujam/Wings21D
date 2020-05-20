@@ -97,7 +97,8 @@ namespace Wings21D.Controllers
                     }
 
                     foreach (TradeCustomerBalance tcb in customerBalance)
-                    {   
+                    {
+                        tcb.customerName = tcb.customerName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Trade_CustomerPendingBills_Table Values('" + tcb.customerName + "', '"
                                           + tcb.billNumber + "', '" + tcb.billDate + "', " + tcb.pendingValue + ")";
                         cmd.ExecuteNonQuery();

@@ -96,28 +96,42 @@ namespace Wings21D.Controllers
                             cmd.CommandText = "Delete from Books_Products_Table";
                             cmd.ExecuteNonQuery();
                             con.Close();
+
+                            con.Open();
+                            foreach (BooksProducts tproducts in ti)
+                            {
+                                tproducts.productName = tproducts.productName.Replace("'", "''");
+                                cmd.CommandText = "Insert Into Books_Products_Table Values(NEWID(), '" +
+                                tproducts.productName + "','" + tproducts.hsnsac + "'," + tproducts.rateperpiece + ",'" + tproducts.gstrate + "'," + tproducts.productmrp + "," + tproducts.activeStatus + ")";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
+
                         }
                         catch (Exception e)
                         {
                             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                         }
                     }
-                }
-
-                try
-                {
-                    con.Open();
-                    foreach (BooksProducts tproducts in ti)
+                    else
                     {
-                        cmd.CommandText = "Insert Into Books_Products_Table Values(NEWID(), '" +
-                        tproducts.productName + "','" + tproducts.hsnsac + "'," + tproducts.rateperpiece + ",'" + tproducts.gstrate + "'," + tproducts.productmrp + "," + tproducts.activeStatus + ")";
-                        cmd.ExecuteNonQuery();
+                        try
+                        {
+                            con.Open();
+                            foreach (BooksProducts tproducts in ti)
+                            {
+                                tproducts.productName = tproducts.productName.Replace("'", "''");
+                                cmd.CommandText = "Insert Into Books_Products_Table Values(NEWID(), '" +
+                                tproducts.productName + "','" + tproducts.hsnsac + "'," + tproducts.rateperpiece + ",'" + tproducts.gstrate + "'," + tproducts.productmrp + "," + tproducts.activeStatus + ")";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        catch
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
                     }
-                    con.Close();
-                }
-                catch
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }

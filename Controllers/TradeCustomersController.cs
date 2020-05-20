@@ -119,6 +119,17 @@ namespace Wings21D.Controllers
                             cmd.CommandText = "Delete from Trade_Customers_Table";
                             cmd.ExecuteNonQuery();
                             con.Close();
+
+                            con.Open();
+                            foreach (TradeCustomers cust in customers)
+                            {
+                                cust.customerName = cust.customerName.Replace("'", "''");
+                                cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
+                                cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
+                                "'," + cust.activeStatus + ")";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
                         catch (Exception e)
                         {
@@ -132,6 +143,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (TradeCustomers cust in customers)
                     {
+                        cust.customerName = cust.customerName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
                         cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
                         "'," + cust.activeStatus + ")";

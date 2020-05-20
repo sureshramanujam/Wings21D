@@ -96,12 +96,13 @@ namespace Wings21D.Controllers
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = con;
 
+                /*
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
+                
                 cmd.CommandText = "Select name from sys.tables where name='Books_CustomerOfficeAddress_Table'";
                 da.SelectCommand = cmd;
-                dt.Clear();
                 da.Fill(dt);
                 con.Close();
 
@@ -135,11 +136,11 @@ namespace Wings21D.Controllers
 
                 cmd.CommandText = "Select name from sys.tables where name='Books_CustomerShippingAddress_Table'";
                 da.SelectCommand = cmd;
-                dt.Clear();
-                da.Fill(dt);
+                DataTable dt1 = new DataTable();
+                da.Fill(dt1);
                 con.Close();
 
-                if (dt.Rows.Count == 0)
+                if (dt1.Rows.Count == 0)
                 {
                     con.Open();
                     cmd.CommandText = "Create Table Books_CustomerShippingAddress_Table (" +
@@ -169,11 +170,11 @@ namespace Wings21D.Controllers
 
                 cmd.CommandText = "Select name from sys.tables where name='Books_CustomerContactDetails_Table'";
                 da.SelectCommand = cmd;
-                dt.Clear();
-                da.Fill(dt);
+                DataTable dt2 = new DataTable();
+                da.Fill(dt2);
                 con.Close();
 
-                if (dt.Rows.Count == 0)
+                if (dt2.Rows.Count == 0)
                 {
                     con.Open();
                     cmd.CommandText = "Create Table Books_CustomerContactDetails_Table (" +
@@ -186,7 +187,7 @@ namespace Wings21D.Controllers
 
                     con.Open();
                     foreach (BooksCustomers cust in customers)
-                    {
+                    {   
                         cmd.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
                                                        cust.PrimaryContactNumber + "','" + cust.AlternateContactnumber + "','" +
                                                        cust.EmailId + "',')";
@@ -194,6 +195,7 @@ namespace Wings21D.Controllers
                     }
                     con.Close();
                 }
+                */
 
                 if (uploadAll.Trim().ToLower() == "true")
                 {
@@ -207,12 +209,14 @@ namespace Wings21D.Controllers
                         con.Open();
                         foreach (BooksCustomers cust in customers)
                         {
+                            cust.CustomerName = cust.CustomerName.Replace("'", "''");
                             cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
                                               "'," + cust.ActiveStatus + ")";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
 
+                        /*
                         con.Open();
                         cmd.CommandText = "Delete From Books_CustomerOfficeAddress_Table";
                         cmd.ExecuteNonQuery();
@@ -261,6 +265,7 @@ namespace Wings21D.Controllers
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
+                        */
                     }
                     catch (Exception e)
                     {
@@ -274,12 +279,14 @@ namespace Wings21D.Controllers
                         con.Open();
                         foreach (BooksCustomers cust in customers)
                         {
+                            cust.CustomerName = cust.CustomerName.Replace("'", "''");
                             cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
                             "'," + cust.ActiveStatus + ")";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
 
+                        /*
                         con.Open();
                         foreach (BooksCustomers cust in customers)
                         {
@@ -313,7 +320,7 @@ namespace Wings21D.Controllers
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
-
+                        */
                     }
                     catch (Exception ex)
                     {

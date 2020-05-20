@@ -31,9 +31,6 @@ namespace Wings21D.Controllers
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    DateTime startDate = DateTime.Parse(fromDate);
-                    DateTime endDate = DateTime.Parse(toDate);
-
 
                     cmd.CommandText = "Select DocumentNo, Convert(varchar,TransactionDate,105) As 'CollectionDate', CustomerName, " +
                                       "Amount, RTRIM(ISNULL(AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, TransactionRemarks, " +

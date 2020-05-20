@@ -96,7 +96,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     
                     string transRemarks = myCE.transactionRemarks.Replace("\\n", "");
-
+                    myCE.customerName = myCE.customerName.Replace("'", "''");
                     cmd.CommandText = "Insert Into Collections_Table Values(" +
                                       //"(Select ISNULL(Max(TransactionNo),0)+1 From Collections_Table Where YEAR(convert(varchar,TransactionDate,23))='" + String.Format("{0:yyyy}", todayDate.Date) + "')," +
                                       "(Select ISNULL(Max(TransactionNo),0)+1 From Collections_Table), " +

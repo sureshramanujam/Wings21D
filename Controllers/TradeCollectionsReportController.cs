@@ -31,7 +31,6 @@ namespace Wings21D.Controllers
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "Select DocumentNo, Convert(varchar,TransactionDate,105) As 'CollectionDate', CustomerName, " +
                                       "CashAmount, ChequeAmount, ChequeNumber, Format(ChequeDate,'dd-MMM-yyyy') as 'ChequeDate', " +

@@ -134,6 +134,17 @@ namespace Wings21D.Controllers
                             cmd.CommandText = "Delete from Trade_Items_Table";
                             cmd.ExecuteNonQuery();
                             con.Close();
+
+                            con.Open();
+                            foreach (TradeItems titems in ti)
+                            {
+                                titems.itemName = titems.itemName.Replace("'", "''");
+                                cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
+                                titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
+                                "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
                         catch (Exception e)
                         {
@@ -147,6 +158,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (TradeItems titems in ti)
                     {
+                        titems.itemName = titems.itemName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
                         titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
                         "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";

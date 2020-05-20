@@ -107,6 +107,8 @@ namespace Wings21D.Controllers
                     foreach (BooksSalesOrderEntry soe in mySO)
                     {
                         transRemarks = soe.transactionRemarks.Replace("\\n", "");
+                        soe.customerName = soe.customerName.Replace("'", "''");
+                        soe.productName = soe.productName.Replace("'", "''");
 
                         cmd.CommandText = "Insert Into Books_SalesOrder_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.productName + "'," +

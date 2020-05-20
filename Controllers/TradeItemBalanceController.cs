@@ -93,7 +93,8 @@ namespace Wings21D.Controllers
                     }
 
                     foreach (TradeItemBalance tib in itembalance)
-                    {                        
+                    {
+                        tib.itemName = tib.itemName.Replace("'", "''");
                         cmd.CommandText = "Insert Into Trade_ItemBalance_Table Values('" + tib.itemName + "', '" +
                                           tib.locationName + "'," + tib.availableQtyInPieces + ")";
                         cmd.ExecuteNonQuery();
