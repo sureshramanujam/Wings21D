@@ -134,7 +134,42 @@ namespace Wings21D.Controllers
                             cmd.CommandText = "Delete from Trade_Items_Table";
                             cmd.ExecuteNonQuery();
                             con.Close();
+                            string itemName = String.Empty;
 
+                            con.Open();
+                            foreach (TradeItems titems in ti)
+                            {
+                                try
+                                {
+                                    titems.itemName = titems.itemName.Replace("'", "''");
+                                    titems.productName = titems.productName.Replace("'", "''");
+                                    cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
+                                    titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
+                                    //cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', NULL," +
+                                    //"'" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
+                                   "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
+                                    cmd.ExecuteNonQuery();
+                                }
+                                catch (SqlException ex)
+                                {
+                                    var response = Request.CreateResponse(HttpStatusCode.InternalServerError, titems.itemName + ex.ToString(), MediaTypeHeaderValue.Parse("application/json"));
+                                    return response;
+                                }
+                            }
+                            con.Close();
+                        }
+                        catch (Exception e)
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            //var response = Request.CreateResponse(HttpStatusCode.InternalServerError, tite, MediaTypeHeaderValue.Parse("application/json"));
+                            //return response;
+                        }
+                        return new HttpResponseMessage(HttpStatusCode.Created);
+                    }
+                    else
+                    {
+                        try
+                        {
                             con.Open();
                             foreach (TradeItems titems in ti)
                             {
@@ -142,35 +177,19 @@ namespace Wings21D.Controllers
                                 titems.productName = titems.productName.Replace("'", "''");
                                 cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
                                 titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
+                                //cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', NULL," +
+                                //"'" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
                                 "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
                                 cmd.ExecuteNonQuery();
                             }
                             con.Close();
                         }
-                        catch (Exception e)
+                        catch
                         {
                             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                         }
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                }
-
-                try
-                {
-                    con.Open();
-                    foreach (TradeItems titems in ti)
-                    {
-                        titems.itemName = titems.itemName.Replace("'", "''");
-                        titems.productName = titems.productName.Replace("'", "''");
-                        cmd.CommandText = "Insert Into Trade_Items_Table Values(NEWID(),'" + titems.itemName + "', '" +
-                        titems.productName + "','" + titems.hsnsac + "','" + titems.profitCenterName + "'," + titems.rateperpiece +
-                        "," + titems.rateperpack + ",'" + titems.gstrate + "'," + titems.piecesperpack + "," + titems.itemmrp + "," + titems.activeStatus + ")";
-                        cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-                catch
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
                 return new HttpResponseMessage(HttpStatusCode.Created);
             }
