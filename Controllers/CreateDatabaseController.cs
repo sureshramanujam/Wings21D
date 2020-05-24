@@ -20,8 +20,10 @@ namespace Wings21D.Controllers
 
             String cmdString = "RESTORE DATABASE " + dbName +                               
                                @" FROM DISK = N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\Backup\wings21d.bak' " +
-                               @"WITH MOVE 'wings21d' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\Data\" + dbName + ".mdf', " +
-                               @"MOVE 'wings21d_log' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\Data\" + dbName + "_log.ldf'";
+                               @"WITH MOVE 'wings21d' TO N'D:\21DMobileData\" + dbName + ".mdf', " +
+                               @"MOVE 'wings21d_log' TO N'D:\21DMobileData\" + dbName + "_log.ldf'";
+                               //@"WITH MOVE 'wings21d' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\Data\" + dbName + ".mdf', " +
+                               //@"MOVE 'wings21d_log' TO N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\Data\" + dbName + "_log.ldf'";
             SqlCommand cmd = new SqlCommand(cmdString, con);
 
             string responseMessage = String.Empty;
