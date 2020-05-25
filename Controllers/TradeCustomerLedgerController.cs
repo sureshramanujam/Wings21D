@@ -58,24 +58,24 @@ namespace Wings21D.Controllers
                 
             }
         }
-
-        // GET api/<controller>/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
+      
         // POST api/<controller>                
         public HttpResponseMessage Post(List<TradeCustomerLedger> TCL)
         {
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
             string voucherNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
+            }
+
+            if (headers.Contains("uploadall"))
+            {
+                dbName = headers.GetValues("uploadall").First();
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -88,39 +88,41 @@ namespace Wings21D.Controllers
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
 
-                cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
-                da.SelectCommand = cmd;
-                dt.Clear();
-                da.Fill(dt);
-                con.Close();
-
-                if (dt.Rows.Count > 0)
+                if(uploadAll.Trim().ToLower() == "true")
                 {
-                    con.Open();
-                    cmd.CommandText = "Delete From Trade_Customer_Ledger_Table";
-                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
+                    da.SelectCommand = cmd;
+                    dt.Clear();
+                    da.Fill(dt);
                     con.Close();
 
-                    con.Open();
-
-                    foreach(TradeCustomerLedger a in TCL)
+                    if (dt.Rows.Count > 0)
                     {
-                        cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
-                                                 a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
-                                                a.Remarks + "')";
+                        con.Open();
+                        cmd.CommandText = "Delete From Trade_Customer_Ledger_Table";
                         cmd.ExecuteNonQuery();
+                        con.Close();
 
-                        voucherNumbers += a.VoucherNumber + "$";
-                        voucherNumbers = voucherNumbers.Replace('\\', ' ');
+                        con.Open();
+
+                        foreach (TradeCustomerLedger a in TCL)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                                     a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
+                                                    a.Remarks + "')";
+                            cmd.ExecuteNonQuery();
+
+                            voucherNumbers += a.VoucherNumber + "$";
+                            voucherNumbers = voucherNumbers.Replace('\\', ' ');
+                        }
+                        con.Close();
                     }
-                    con.Close();
-                }
-                else 
-                {   
+                    else
+                    {
                         try
                         {
                             con.Open();
-                           
+
                             cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
                                               "TransactionType nvarchar(50) null," +
                                               "VoucherNumber nvarchar(100) null," +
@@ -147,11 +149,73 @@ namespace Wings21D.Controllers
                         }
                         catch (Exception ex)
                         {
-                        //return "Unable to insert data.";
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            //return "Unable to insert data.";
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
+                        //return voucherNumbers;
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    //return voucherNumbers;
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
+                    da.SelectCommand = cmd;
+                    dt.Clear();
+                    da.Fill(dt);
+                    con.Close();
+
+                    if (dt.Rows.Count > 0)
+                    {
+                        foreach (TradeCustomerLedger a in TCL)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                                     a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
+                                                    a.Remarks + "')";
+                            cmd.ExecuteNonQuery();
+
+                            voucherNumbers += a.VoucherNumber + "$";
+                            voucherNumbers = voucherNumbers.Replace('\\', ' ');
+                        }
+                        con.Close();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            con.Open();
+
+                            cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
+                                              "TransactionType nvarchar(50) null," +
+                                              "VoucherNumber nvarchar(100) null," +
+                                              "VoucherDate date null," +
+                                              "Account nvarchar(265) null," +
+                                              "ContraAccount nvarchar(265) null," +
+                                              "DebitAmount decimal(18,2) null," +
+                                              "CreditAmount decimal(18,2) null," +
+                                              "Balancemount decimal(18,2) null," +
+                                              "Remarks nvarchar(265) null)";
+                            cmd.ExecuteNonQuery();
+
+                            foreach (TradeCustomerLedger a in TCL)
+                            {
+                                cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                                  a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
+                                                 a.Remarks + "')";
+                                cmd.ExecuteNonQuery();
+
+                                voucherNumbers += a.VoucherNumber + "$";
+                                voucherNumbers = voucherNumbers.Replace('\\', ' ');
+                            }
+                            con.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            //return "Unable to insert data.";
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
+                        //return voucherNumbers;
+                        return new HttpResponseMessage(HttpStatusCode.Created);
+                    }
                 }
             }
             else
