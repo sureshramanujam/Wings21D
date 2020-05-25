@@ -66,7 +66,7 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public string Post(List<TradeCustomerLedger> TCL)
+        public HttpResponseMessage Post(List<TradeCustomerLedger> TCL)
         {
             var re = Request;
             var headers = re.Headers;
@@ -147,16 +147,19 @@ namespace Wings21D.Controllers
                         }
                         catch (Exception ex)
                         {
-                            return "Unable to insert data.";
-                        }
-                        return voucherNumbers;
+                        //return "Unable to insert data.";
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    //return voucherNumbers;
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
             }
             else
             {
-                return "Databae Error.";
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
-            return voucherNumbers;
+            //return voucherNumbers;
+            return new HttpResponseMessage(HttpStatusCode.Created);
         }
     }
 }
