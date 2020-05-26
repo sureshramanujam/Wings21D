@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Wings21D.Controllers
 {
-    public class TradeCustomerLedgerController : ApiController
+    public class BooksCustomerLedgerController : ApiController
     {
 
         // GET api/<controller>
@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Trade_Customer_Ledger_Table Where Account='" + custName + "' " + 
+                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' " + 
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
                     CustomerLedger.TableName = "CustomerLedger";
@@ -60,7 +60,7 @@ namespace Wings21D.Controllers
         }
       
         // POST api/<controller>                
-        public HttpResponseMessage Post(List<TradeCustomerLedger> TCL)
+        public HttpResponseMessage Post(List<BooksCustomerLedger> TCL)
         {
             var re = Request;
             var headers = re.Headers;
@@ -89,7 +89,7 @@ namespace Wings21D.Controllers
 
                 if(uploadAll.Trim().ToLower() == "true")
                 {
-                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
+                    cmd.CommandText = "Select name from sys.tables where name='Books_Customer_Ledger_Table'";
                     da.SelectCommand = cmd;
                     dt.Clear();
                     da.Fill(dt);
@@ -98,18 +98,18 @@ namespace Wings21D.Controllers
                     if (dt.Rows.Count > 0)
                     {
                         con.Open();
-                        cmd.CommandText = "Delete From Trade_Customer_Ledger_Table";
+                        cmd.CommandText = "Delete From Books_Customer_Ledger_Table";
                         cmd.ExecuteNonQuery();
                         con.Close();
 
                         con.Open();
 
-                        foreach (TradeCustomerLedger a in TCL)
+                        foreach (BooksCustomerLedger a in TCL)
                         {
                             a.Account = a.Account.Replace("'", "''");
                             a.ContraAccount = a.ContraAccount.Replace("'", "''");
                             a.Remarks = a.Remarks.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                            cmd.CommandText = "Insert Into Books_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                      a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                     a.Remarks + "')";
                             cmd.ExecuteNonQuery();
@@ -122,7 +122,7 @@ namespace Wings21D.Controllers
                         {
                             con.Open();
 
-                            cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
+                            cmd.CommandText = "Create Table Books_Customer_Ledger_Table (" +
                                               "TransactionType nvarchar(50) null," +
                                               "VoucherNumber nvarchar(100) null," +
                                               "VoucherDate date null," +
@@ -134,12 +134,12 @@ namespace Wings21D.Controllers
                                               "Remarks nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
 
-                            foreach (TradeCustomerLedger a in TCL)
+                            foreach (BooksCustomerLedger a in TCL)
                             {
                                 a.Account = a.Account.Replace("'", "''");
                                 a.ContraAccount = a.ContraAccount.Replace("'", "''");
                                 a.Remarks = a.Remarks.Replace("'", "''");
-                                cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                cmd.CommandText = "Insert Into Books_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                   a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                  a.Remarks + "')";
                                 cmd.ExecuteNonQuery();
@@ -157,7 +157,7 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
+                    cmd.CommandText = "Select name from sys.tables where name='Books_Customer_Ledger_Table'";
                     da.SelectCommand = cmd;
                     dt.Clear();
                     da.Fill(dt);
@@ -166,12 +166,12 @@ namespace Wings21D.Controllers
                     if (dt.Rows.Count > 0)
                     {
                         con.Open();
-                        foreach (TradeCustomerLedger a in TCL)
+                        foreach (BooksCustomerLedger a in TCL)
                         {
                             a.Account = a.Account.Replace("'", "''");
                             a.ContraAccount = a.ContraAccount.Replace("'", "''");
                             a.Remarks = a.Remarks.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                            cmd.CommandText = "Insert Into Books_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                      a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                     a.Remarks + "')";
                             cmd.ExecuteNonQuery();
@@ -184,7 +184,7 @@ namespace Wings21D.Controllers
                         {
                             con.Open();
 
-                            cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
+                            cmd.CommandText = "Create Table Books_Customer_Ledger_Table (" +
                                               "TransactionType nvarchar(50) null," +
                                               "VoucherNumber nvarchar(100) null," +
                                               "VoucherDate date null," +
@@ -196,12 +196,12 @@ namespace Wings21D.Controllers
                                               "Remarks nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
 
-                            foreach (TradeCustomerLedger a in TCL)
+                            foreach (BooksCustomerLedger a in TCL)
                             {
                                 a.Account = a.Account.Replace("'", "''");
                                 a.ContraAccount = a.ContraAccount.Replace("'", "''");
                                 a.Remarks = a.Remarks.Replace("'", "''");
-                                cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                cmd.CommandText = "Insert Into Books_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                   a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                  a.Remarks + "')";
                                 cmd.ExecuteNonQuery();
