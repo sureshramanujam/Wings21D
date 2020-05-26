@@ -66,7 +66,6 @@ namespace Wings21D.Controllers
             var headers = re.Headers;
             String dbName = String.Empty;
             String uploadAll = String.Empty;
-            string voucherNumbers = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -75,7 +74,7 @@ namespace Wings21D.Controllers
 
             if (headers.Contains("uploadall"))
             {
-                dbName = headers.GetValues("uploadall").First();
+                uploadAll = headers.GetValues("uploadall").First();
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -107,13 +106,13 @@ namespace Wings21D.Controllers
 
                         foreach (TradeCustomerLedger a in TCL)
                         {
+                            a.Account = a.Account.Replace("'", "''");
+                            a.ContraAccount = a.ContraAccount.Replace("'", "''");
+                            a.Remarks = a.Remarks.Replace("'", "''");
                             cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                      a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                     a.Remarks + "')";
                             cmd.ExecuteNonQuery();
-
-                            voucherNumbers += a.VoucherNumber + "$";
-                            voucherNumbers = voucherNumbers.Replace('\\', ' ');
                         }
                         con.Close();
                     }
@@ -137,13 +136,13 @@ namespace Wings21D.Controllers
 
                             foreach (TradeCustomerLedger a in TCL)
                             {
+                                a.Account = a.Account.Replace("'", "''");
+                                a.ContraAccount = a.ContraAccount.Replace("'", "''");
+                                a.Remarks = a.Remarks.Replace("'", "''");
                                 cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                   a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                  a.Remarks + "')";
                                 cmd.ExecuteNonQuery();
-
-                                voucherNumbers += a.VoucherNumber + "$";
-                                voucherNumbers = voucherNumbers.Replace('\\', ' ');
                             }
                             con.Close();
                         }
@@ -166,15 +165,16 @@ namespace Wings21D.Controllers
 
                     if (dt.Rows.Count > 0)
                     {
+                        con.Open();
                         foreach (TradeCustomerLedger a in TCL)
                         {
+                            a.Account = a.Account.Replace("'", "''");
+                            a.ContraAccount = a.ContraAccount.Replace("'", "''");
+                            a.Remarks = a.Remarks.Replace("'", "''");
                             cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                      a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                     a.Remarks + "')";
                             cmd.ExecuteNonQuery();
-
-                            voucherNumbers += a.VoucherNumber + "$";
-                            voucherNumbers = voucherNumbers.Replace('\\', ' ');
                         }
                         con.Close();
                     }
@@ -198,13 +198,13 @@ namespace Wings21D.Controllers
 
                             foreach (TradeCustomerLedger a in TCL)
                             {
+                                a.Account = a.Account.Replace("'", "''");
+                                a.ContraAccount = a.ContraAccount.Replace("'", "''");
+                                a.Remarks = a.Remarks.Replace("'", "''");
                                 cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
                                                   a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
                                                  a.Remarks + "')";
                                 cmd.ExecuteNonQuery();
-
-                                voucherNumbers += a.VoucherNumber + "$";
-                                voucherNumbers = voucherNumbers.Replace('\\', ' ');
                             }
                             con.Close();
                         }
