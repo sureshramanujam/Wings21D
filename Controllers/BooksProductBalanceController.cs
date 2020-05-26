@@ -61,51 +61,78 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
+            /*
+            con.Open();
+            SqlDataAdapter productBalancesAdapter = new SqlDataAdapter();
+            DataTable availableProductBalances = new DataTable();
+            cmd.CommandText = "Select * From Books_ProductBalance_table";
+            productBalancesAdapter.SelectCommand = cmd;
+            productBalancesAdapter.Fill(availableProductBalances);
+            con.Close();
+            */
+
             if (!String.IsNullOrEmpty(dbName))
             {
-                con.Open();
-                SqlDataAdapter productBalancesAdapter = new SqlDataAdapter();
-                DataTable availableProductBalances = new DataTable();
-                cmd.CommandText = "Select * From Books_ProductBalance_table";
-                productBalancesAdapter.SelectCommand = cmd;
-                productBalancesAdapter.Fill(availableProductBalances);
-                
-                con.Close();
-
-                try
+                if (uploadAll.ToLower().Trim() == "true")
                 {
-                    con.Open();
-
-                    if (availableProductBalances.Rows.Count > 0)
+                    try
                     {
+                        /*
+                        if (availableProductBalances.Rows.Count > 0)
+                        {  
+                        }
+                        */
+
+                        con.Open();
                         cmd.CommandText = "Delete * from Books_ProductBalance_Table";
                         cmd.ExecuteNonQuery();
+                        con.Close();
+
+                        con.Open();
+
+                        foreach (BooksProductBalance bpb in productbalance)
+                        {
+                            cmd.CommandText = "Insert Into Books_ProductBalance_Table Values('" + bpb.productName + "', '" +
+                                              bpb.locationName + "'," + bpb.availableQty + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
 
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    con.Open();
                     foreach (BooksProductBalance bpb in productbalance)
-                    {                        
+                    {
                         cmd.CommandText = "Insert Into Books_ProductBalance_Table Values('" + bpb.productName + "', '" +
                                           bpb.locationName + "'," + bpb.availableQty + ")";
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
-
-                return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {

@@ -65,37 +65,68 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
+            /*
+            con.Open();
+            cmd.CommandText = "Select * From Books_CustomersPendingBills_Table";
+            SqlDataAdapter customerBalancesAdapter = new SqlDataAdapter();
+            DataTable availableCustoemrBalances = new DataTable();
+            customerBalancesAdapter.SelectCommand = cmd;
+            customerBalancesAdapter.Fill(availableCustoemrBalances);
+            con.Close();
+            */
+
             if (!String.IsNullOrEmpty(dbName))
             {
-                con.Open();
-                cmd.CommandText = "Select * From Books_CustomersPendingBills_Table";
-                SqlDataAdapter customerBalancesAdapter = new SqlDataAdapter();
-                DataTable availableCustoemrBalances = new DataTable();
-                customerBalancesAdapter.SelectCommand = cmd;
-                customerBalancesAdapter.Fill(availableCustoemrBalances);
-
-                con.Close();
-
-                try
+                if (uploadAll.ToLower().Trim() == "true")
                 {
-                    con.Open();
-
-                    if(availableCustoemrBalances.Rows.Count > 0)
+                    try
                     {
+                        /*
+                        if (availableCustoemrBalances.Rows.Count > 0)
+                        {   
+                        }
+                        */
+
+                        con.Open();
                         cmd.CommandText = "Delete * from Books_CustomersPendingBills_Table";
                         cmd.ExecuteNonQuery();
-                    }
+                        con.Close();
 
+                        con.Open();
+                        foreach (BooksCustomerBalance bcb in customerBalance)
+                        {
+                            bcb.customerName = bcb.customerName.Replace("'", "''");
+                            cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
+                                              + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    con.Open();
                     foreach (BooksCustomerBalance bcb in customerBalance)
                     {
                         bcb.customerName = bcb.customerName.Replace("'", "''");
@@ -104,13 +135,8 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
-
-                return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {
@@ -119,3 +145,5 @@ namespace Wings21D.Controllers
         }
     }
 }
+
+

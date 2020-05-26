@@ -130,7 +130,7 @@ namespace Wings21D.Controllers
                                               "ContraAccount nvarchar(265) null," +
                                               "DebitAmount decimal(18,2) null," +
                                               "CreditAmount decimal(18,2) null," +
-                                              "Balancemount decimal(18,2) null," +
+                                              "BalanceAmount decimal(18,2) null," +
                                               "Remarks nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
 
@@ -192,7 +192,7 @@ namespace Wings21D.Controllers
                                               "ContraAccount nvarchar(265) null," +
                                               "DebitAmount decimal(18,2) null," +
                                               "CreditAmount decimal(18,2) null," +
-                                              "Balancemount decimal(18,2) null," +
+                                              "BalanceAmount decimal(18,2) null," +
                                               "Remarks nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
 

@@ -61,36 +61,66 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
 
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+            }
+
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
+            /*
+            con.Open();
+            SqlDataAdapter itemBalancesAdapter = new SqlDataAdapter();
+            DataTable availableItemBalances = new DataTable();
+            cmd.CommandText = "Select * From Trade_ItemBalance_table";
+            itemBalancesAdapter.SelectCommand = cmd;
+            itemBalancesAdapter.Fill(availableItemBalances);
+            */
+
+            //con.Close();
+
             if (!String.IsNullOrEmpty(dbName))
             {
-                con.Open();
-                SqlDataAdapter itemBalancesAdapter = new SqlDataAdapter();
-                DataTable availableItemBalances = new DataTable();
-                cmd.CommandText = "Select * From Trade_ItemBalance_table";
-                itemBalancesAdapter.SelectCommand = cmd;
-                itemBalancesAdapter.Fill(availableItemBalances);
-                
-                con.Close();
-
-                try
-                {
-                    con.Open();
-
-                    if (availableItemBalances.Rows.Count > 0)
+                if (uploadAll.ToLower().Trim() == "true")
+                {   
+                    try
                     {
+                        //if (availableItemBalances.Rows.Count > 0)
+                        //{
+                        con.Open();
                         cmd.CommandText = "Delete from Trade_ItemBalance_Table";
                         cmd.ExecuteNonQuery();
+                        con.Close();
+                        //}
+
+                        con.Open();
+                        foreach (TradeItemBalance tib in itembalance)
+                        {
+                            tib.itemName = tib.itemName.Replace("'", "''");
+                            cmd.CommandText = "Insert Into Trade_ItemBalance_Table Values('" + tib.itemName + "', '" +
+                                              tib.locationName + "'," + tib.availableQtyInPieces + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
                     }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    con.Open();
 
                     foreach (TradeItemBalance tib in itembalance)
                     {
@@ -100,13 +130,10 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
 
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                //return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {
