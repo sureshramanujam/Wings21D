@@ -102,6 +102,7 @@ namespace Wings21D.Controllers
                         con.Open();
                         cmd.CommandText = "Delete from Trade_CustomerPendingBills_Table";
                         cmd.ExecuteNonQuery();
+                        con.Close();
 
                         con.Open();
 
