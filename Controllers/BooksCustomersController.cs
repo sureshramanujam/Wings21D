@@ -96,107 +96,6 @@ namespace Wings21D.Controllers
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = con;
 
-                /*
-                con.Open();
-                SqlDataAdapter da = new SqlDataAdapter();
-                DataTable dt = new DataTable();
-                
-                cmd.CommandText = "Select name from sys.tables where name='Books_CustomerOfficeAddress_Table'";
-                da.SelectCommand = cmd;
-                da.Fill(dt);
-                con.Close();
-
-                if (dt.Rows.Count == 0)
-                {
-                    con.Open();
-                    cmd.CommandText = "Create Table Books_CustomerOfficeAddress_Table (" +
-                                           "CustomerName nvarchar(265) null," +
-                                           "AddressLine1 nvarchar(265) null," +
-                                           "AddressLine2 nvarchar(265) null," +
-                                           "AddressLine3 nvarchar(265) null," +
-                                           "City nvarchar(265) null," +
-                                           "State nvarchar(265) null," +
-                                           "Country nvarchar(265) null," +
-                                           "PINCode nvarchar(265) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    con.Open();
-
-                    foreach (BooksCustomers cust in customers)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
-                                           cust.OfficeAddressLine1 + "','" + cust.OfficeAddressLine2 + "','" +
-                                           cust.OfficeAddressLine3 + "','" + cust.OfficeCity + "','" +
-                                           cust.OfficeState + "','" + cust.OfficeCountry + "','" +
-                                           cust.OfficePINCode + "')";
-                        cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-
-                cmd.CommandText = "Select name from sys.tables where name='Books_CustomerShippingAddress_Table'";
-                da.SelectCommand = cmd;
-                DataTable dt1 = new DataTable();
-                da.Fill(dt1);
-                con.Close();
-
-                if (dt1.Rows.Count == 0)
-                {
-                    con.Open();
-                    cmd.CommandText = "Create Table Books_CustomerShippingAddress_Table (" +
-                                           "CustomerName nvarchar(265) null," +
-                                           "AddressLine1 nvarchar(265) null," +
-                                           "AddressLine2 nvarchar(265) null," +
-                                           "AddressLine3 nvarchar(265) null," +
-                                           "City nvarchar(265) null," +
-                                           "State nvarchar(265) null," +
-                                           "Country nvarchar(265) null," +
-                                           "PINCode nvarchar(265) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-                    con.Open();
-
-                    foreach (BooksCustomers cust in customers)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
-                                                       cust.ShippingAddressLine1 + "','" + cust.ShippingAddressLine2 + "','" +
-                                                       cust.ShippingAddressLine3 + "','" + cust.ShippingCity + "','" +
-                                                       cust.ShippingState + "','" + cust.ShippingCountry + "','" +
-                                                       cust.ShippingPINCode + "')";
-                        cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-
-                cmd.CommandText = "Select name from sys.tables where name='Books_CustomerContactDetails_Table'";
-                da.SelectCommand = cmd;
-                DataTable dt2 = new DataTable();
-                da.Fill(dt2);
-                con.Close();
-
-                if (dt2.Rows.Count == 0)
-                {
-                    con.Open();
-                    cmd.CommandText = "Create Table Books_CustomerContactDetails_Table (" +
-                                           "CustomerName nvarchar(265) null," +
-                                           "PrimaryContactNumber nchar(20) null," +
-                                           "AlterContactNumber nchar(20) null," +
-                                           "EmaiId nvarchar(265) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    con.Open();
-                    foreach (BooksCustomers cust in customers)
-                    {   
-                        cmd.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
-                                                       cust.PrimaryContactNumber + "','" + cust.AlternateContactnumber + "','" +
-                                                       cust.EmailId + "',')";
-                        cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-                */
-
                 if (uploadAll.Trim().ToLower() == "true")
                 {
                     try
@@ -210,62 +109,182 @@ namespace Wings21D.Controllers
                         foreach (BooksCustomers cust in customers)
                         {
                             cust.CustomerName = cust.CustomerName.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
-                                              "'," + cust.ActiveStatus + ")";
+                            //cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
+                            cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "',''," + cust.ActiveStatus + ")";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
 
-                        /*
+                        //Office Address
+                        SqlDataAdapter officeAddressAdapter = new SqlDataAdapter();
+                        DataTable officeAddressDataTable = new DataTable();
+                        SqlCommand officeAddressCommand = new SqlCommand();
+                        officeAddressCommand.CommandText = "Select name from sys.tables where name='Books_CustomerOfficeAddress_Table'";
+                        officeAddressCommand.Connection = con;
                         con.Open();
-                        cmd.CommandText = "Delete From Books_CustomerOfficeAddress_Table";
-                        cmd.ExecuteNonQuery();
+                        officeAddressAdapter.SelectCommand = cmd;
+                        officeAddressAdapter.Fill(officeAddressDataTable);
                         con.Close();
 
-                        con.Open();
-                        foreach (BooksCustomers cust in customers)
+                        if (officeAddressDataTable.Rows.Count == 0)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
-                                              cust.OfficeAddressLine1 + "','" + cust.OfficeAddressLine2 + "','" +
-                                              cust.OfficeAddressLine3 + "','" + cust.OfficeCity + "','" +
-                                              cust.OfficeState + "','" + cust.OfficeCountry + "','" +
-                                              cust.OfficePINCode + "')";
-                            cmd.ExecuteNonQuery();
+                            con.Open();
+                            officeAddressCommand.CommandText = "Create Table Books_CustomerOfficeAddress_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "AddressLine1 nvarchar(265) null," +
+                                                   "AddressLine2 nvarchar(265) null," +
+                                                   "AddressLine3 nvarchar(265) null," +
+                                                   "City nvarchar(265) null," +
+                                                   "State nvarchar(265) null," +
+                                                   "Country nvarchar(265) null," +
+                                                   "PINCode nvarchar(265) null," +
+                                                   "ContactPerson nvarchar(265) null)";
+                            officeAddressCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                officeAddressCommand.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
+                                                   cust.BillingAddressLineOne + "','" + cust.BillingAddressLineTwo + "','" +
+                                                   cust.BillingAddressLineThree + "','" + cust.BillingAddressCity + "','" +
+                                                   cust.BillingAddressState+ "','" + cust.BillingAddressCountry + "','" +
+                                                   cust.BillingAddressPincode + "','" + cust.BillingAddressContactPerson + "')";
+                                officeAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
-                        con.Close();
-
-                        con.Open();
-                        cmd.CommandText = "Delete From Books_CustomerShippingAddress_Table";
-                        cmd.ExecuteNonQuery();
-                        con.Close();
-
-                        con.Open();
-                        foreach (BooksCustomers cust in customers)
+                        else
                         {
-                            cmd.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
-                                               cust.ShippingAddressLine1 + "','" + cust.ShippingAddressLine2 + "','" +
-                                               cust.ShippingAddressLine3 + "','" + cust.ShippingCity + "','" +
-                                               cust.ShippingState + "','" + cust.ShippingCountry + "','" +
-                                               cust.ShippingPINCode + "')";
-                            cmd.ExecuteNonQuery();
+                            con.Open();
+                            officeAddressCommand.CommandText = "Delete From Books_CustomerOfficeAddress_Table";
+                            officeAddressCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                officeAddressCommand.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
+                                                   cust.BillingAddressLineOne + "','" + cust.BillingAddressLineTwo + "','" +
+                                                   cust.BillingAddressLineThree + "','" + cust.BillingAddressCity + "','" +
+                                                   cust.BillingAddressState + "','" + cust.BillingAddressCountry + "','" +
+                                                   cust.BillingAddressPincode + "','" + cust.BillingAddressContactPerson + "')";
+                                officeAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
+                        //Office Address
+
+                        //Shipping Address
+                        SqlDataAdapter shippingAddressAdapter = new SqlDataAdapter();
+                        DataTable shippingAddressDataTable = new DataTable();
+                        SqlCommand shippingAddressCommand = new SqlCommand();
+                        shippingAddressCommand.CommandText = "Select name from sys.tables where name='Books_CustomerShippingAddress_Table'";
+                        shippingAddressCommand.Connection = con;
+                        con.Open();
+                        shippingAddressAdapter.SelectCommand = shippingAddressCommand;
+                        shippingAddressAdapter.Fill(shippingAddressDataTable);
                         con.Close();
 
-                        con.Open();
-                        cmd.CommandText = "Delete From Books_CustomerContactDetails_Table";
-                        cmd.ExecuteNonQuery();
-                        con.Close();
-
-                        con.Open();
-                        foreach (BooksCustomers cust in customers)
+                        if (shippingAddressDataTable.Rows.Count == 0)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
-                                               cust.PrimaryContactNumber + "','" + cust.AlternateContactnumber + "','" +
-                                               cust.EmailId + "',')";
-                            cmd.ExecuteNonQuery();
+                            con.Open();
+                            shippingAddressCommand.CommandText = "Create Table Books_CustomerShippingAddress_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "AddressLine1 nvarchar(265) null," +
+                                                   "AddressLine2 nvarchar(265) null," +
+                                                   "AddressLine3 nvarchar(265) null," +
+                                                   "City nvarchar(265) null," +
+                                                   "State nvarchar(265) null," +
+                                                   "Country nvarchar(265) null," +
+                                                   "PINCode nvarchar(265) null," +
+                                                   "ContactPerson nvarchar(265) null)";
+                            shippingAddressCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                shippingAddressCommand.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.ShippingAddressLineOne + "','" + cust.ShippingAddressLineTwo + "','" +
+                                                               cust.ShippingAddressLineThree + "','" + cust.ShippingAddressCity + "','" +
+                                                               cust.ShippingAddressState + "','" + cust.ShippingAddressCountry + "','" +
+                                                               cust.ShippingPincode + "','" + cust.ShippingAddressContactPerson + "')";
+                                shippingAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
+                        else
+                        {
+                            con.Open();
+                            shippingAddressCommand.CommandText = "Delete From Books_CustomerShippingAddress_Table";
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                shippingAddressCommand.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.ShippingAddressLineOne + "','" + cust.ShippingAddressLineTwo + "','" +
+                                                               cust.ShippingAddressLineThree + "','" + cust.ShippingAddressCity + "','" +
+                                                               cust.ShippingAddressState + "','" + cust.ShippingAddressCountry + "','" +
+                                                               cust.ShippingPincode + "','" + cust.ShippingAddressContactPerson + "')";
+                                shippingAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        //Shipping Address
+
+                        //Contact Details
+                        SqlDataAdapter contactDetailsAdapter = new SqlDataAdapter();
+                        DataTable contactDetailsDataTable = new DataTable();
+                        SqlCommand contactDetailsCommand = new SqlCommand();
+                        contactDetailsCommand.CommandText = "Select name from sys.tables where name='Books_CustomerContactDetails_Table'";
+                        contactDetailsAdapter.SelectCommand = cmd;
+                        DataTable dt2 = new DataTable();
+                        contactDetailsAdapter.Fill(contactDetailsDataTable);
                         con.Close();
-                        */
+
+                        if (contactDetailsDataTable.Rows.Count == 0)
+                        {
+                            con.Open();
+                            contactDetailsCommand.CommandText = "Create Table Books_CustomerContactDetails_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "PrimaryContactNumber nchar(20) null," +
+                                                   "AlterContactNumber nchar(20) null," +
+                                                   "EmaiId nvarchar(265) null)";
+                            contactDetailsCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                contactDetailsCommand.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.PersonalPhone + "','" + cust.OfficePhone + "','" +
+                                                               cust.EmailId + "',')";
+                                contactDetailsCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        else
+                        {
+                            contactDetailsCommand.CommandText = "Delete From Books_CustomerContactDetails_Table";
+                            contactDetailsCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                contactDetailsCommand.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.PersonalPhone + "','" + cust.OfficePhone + "','" +
+                                                               cust.EmailId + "',')";
+                                contactDetailsCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        //Contact Details
+
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                     catch (Exception e)
                     {
@@ -280,54 +299,175 @@ namespace Wings21D.Controllers
                         foreach (BooksCustomers cust in customers)
                         {
                             cust.CustomerName = cust.CustomerName.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
-                            "'," + cust.ActiveStatus + ")";
+                            //cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "','" + cust.City +
+                            cmd.CommandText = "Insert Into Books_Customers_Table Values('" + cust.CustomerName + "','" + cust.GSTNumber + "',''," + cust.ActiveStatus + ")";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
 
-                        /*
+                        //Office Address
                         con.Open();
-                        foreach (BooksCustomers cust in customers)
-                        {
-                            cmd.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
-                                              cust.OfficeAddressLine1 + "','" + cust.OfficeAddressLine2 + "','" +
-                                              cust.OfficeAddressLine3 + "','" + cust.OfficeCity + "','" +
-                                              cust.OfficeState + "','" + cust.OfficeCountry + "','" +
-                                              cust.OfficePINCode + "')";
-                            cmd.ExecuteNonQuery();
-                        }
+                        SqlDataAdapter officeAddressAdapter = new SqlDataAdapter();
+                        DataTable officeAddressDataTable = new DataTable();
+
+                        cmd.CommandText = "Select name from sys.tables where name='Books_CustomerOfficeAddress_Table'";
+                        officeAddressAdapter.SelectCommand = cmd;
+                        officeAddressAdapter.Fill(officeAddressDataTable);
                         con.Close();
 
-                        con.Open();
-                        foreach (BooksCustomers cust in customers)
+                        if (officeAddressDataTable.Rows.Count == 0)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
-                                               cust.ShippingAddressLine1 + "','" + cust.ShippingAddressLine2 + "','" +
-                                               cust.ShippingAddressLine3 + "','" + cust.ShippingCity + "','" +
-                                               cust.ShippingState + "','" + cust.ShippingCountry + "','" +
-                                               cust.ShippingPINCode + "')";
+                            con.Open();
+                            cmd.CommandText = "Create Table Books_CustomerOfficeAddress_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "AddressLine1 nvarchar(265) null," +
+                                                   "AddressLine2 nvarchar(265) null," +
+                                                   "AddressLine3 nvarchar(265) null," +
+                                                   "City nvarchar(265) null," +
+                                                   "State nvarchar(265) null," +
+                                                   "Country nvarchar(265) null," +
+                                                   "PINCode nvarchar(265) null," +
+                                                   "ContactPerson nvarchar(265) null)";
                             cmd.ExecuteNonQuery();
+                            con.Close();
+                            con.Open();
+
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                cmd.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
+                                                   cust.BillingAddressLineOne + "','" + cust.BillingAddressLineTwo + "','" +
+                                                   cust.BillingAddressLineThree + "','" + cust.BillingAddressCity + "','" +
+                                                   cust.BillingAddressState + "','" + cust.BillingAddressCountry + "','" +
+                                                   cust.BillingAddressPincode + "','" + cust.BillingAddressContactPerson + "')";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
+                        else
+                        {   
+                            con.Open();
+
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                cmd.CommandText = "Insert Into Books_CustomerOfficeAddress_Table Values('" + cust.CustomerName + "','" +
+                                                   cust.BillingAddressLineOne + "','" + cust.BillingAddressLineTwo + "','" +
+                                                   cust.BillingAddressLineThree + "','" + cust.BillingAddressCity + "','" +
+                                                   cust.BillingAddressState + "','" + cust.BillingAddressCountry + "','" +
+                                                   cust.BillingAddressPincode + "','" + cust.BillingAddressContactPerson + "')";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        //Office Address
+
+                        //Shipping Address
+                        SqlDataAdapter shippingAddressAdapter = new SqlDataAdapter();
+                        DataTable shippingAddressDataTable = new DataTable();
+                        SqlCommand shippingAddressCommand = new SqlCommand();
+                        shippingAddressCommand.CommandText = "Select name from sys.tables where name='Books_CustomerShippingAddress_Table'";
+                        shippingAddressCommand.Connection = con;
+                        con.Open();
+                        shippingAddressAdapter.SelectCommand = shippingAddressCommand;
+                        shippingAddressAdapter.Fill(shippingAddressDataTable);
                         con.Close();
 
-                        con.Open();
-                        foreach (BooksCustomers cust in customers)
+                        if (shippingAddressDataTable.Rows.Count == 0)
                         {
-                            cmd.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
-                                               cust.PrimaryContactNumber + "','" + cust.AlternateContactnumber + "','" +
-                                               cust.EmailId + "',')";
-                            cmd.ExecuteNonQuery();
+                            con.Open();
+                            shippingAddressCommand.CommandText = "Create Table Books_CustomerShippingAddress_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "AddressLine1 nvarchar(265) null," +
+                                                   "AddressLine2 nvarchar(265) null," +
+                                                   "AddressLine3 nvarchar(265) null," +
+                                                   "City nvarchar(265) null," +
+                                                   "State nvarchar(265) null," +
+                                                   "Country nvarchar(265) null," +
+                                                   "PINCode nvarchar(265) null," +
+                                                   "ContactPerson nvarchar(265) null)";
+                            shippingAddressCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                shippingAddressCommand.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.ShippingAddressLineOne + "','" + cust.ShippingAddressLineTwo + "','" +
+                                                               cust.ShippingAddressLineThree + "','" + cust.ShippingAddressCity + "','" +
+                                                               cust.ShippingAddressState + "','" + cust.ShippingAddressCountry + "','" +
+                                                               cust.ShippingPincode + "','" + cust.ShippingAddressContactPerson + "')";
+                                shippingAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
+                        else
+                        {  
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                shippingAddressCommand.CommandText = "Insert Into Books_CustomerShippingAddress_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.ShippingAddressLineOne + "','" + cust.ShippingAddressLineTwo + "','" +
+                                                               cust.ShippingAddressLineThree + "','" + cust.ShippingAddressCity + "','" +
+                                                               cust.ShippingAddressState + "','" + cust.ShippingAddressCountry + "','" +
+                                                               cust.ShippingPincode + "','" + cust.ShippingAddressContactPerson + "')";
+                                shippingAddressCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        //Shipping Address
+
+                        //Contact Details
+                        SqlDataAdapter contactDetailsAdapter = new SqlDataAdapter();
+                        DataTable contactDetailsDataTable = new DataTable();
+                        SqlCommand contactDetailsCommand = new SqlCommand();
+                        contactDetailsCommand.CommandText = "Select name from sys.tables where name='Books_CustomerContactDetails_Table'";
+                        contactDetailsAdapter.SelectCommand = cmd;
+                        DataTable dt2 = new DataTable();
+                        contactDetailsAdapter.Fill(contactDetailsDataTable);
                         con.Close();
-                        */
+
+                        if (contactDetailsDataTable.Rows.Count == 0)
+                        {
+                            con.Open();
+                            contactDetailsCommand.CommandText = "Create Table Books_CustomerContactDetails_Table (" +
+                                                   "CustomerName nvarchar(265) null," +
+                                                   "PrimaryContactNumber nchar(20) null," +
+                                                   "AlterContactNumber nchar(20) null," +
+                                                   "EmaiId nvarchar(265) null)";
+                            contactDetailsCommand.ExecuteNonQuery();
+                            con.Close();
+
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                contactDetailsCommand.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.PersonalPhone + "','" + cust.OfficePhone + "','" +
+                                                               cust.EmailId + "',')";
+                                contactDetailsCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        else
+                        {   
+                            con.Open();
+                            foreach (BooksCustomers cust in customers)
+                            {
+                                contactDetailsCommand.CommandText = "Insert Into Books_CustomerContactDetails_Table Values('" + cust.CustomerName + "','" +
+                                                               cust.PersonalPhone + "','" + cust.OfficePhone + "','" +
+                                                               cust.EmailId + "',')";
+                                contactDetailsCommand.ExecuteNonQuery();
+                            }
+                            con.Close();
+                        }
+                        //Contact Details
+
+
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                     catch (Exception ex)
                     {
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
-                }                
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                }
             }
             else
             {

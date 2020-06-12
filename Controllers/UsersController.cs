@@ -54,12 +54,13 @@ namespace Wings21D.Controllers
             
             if (!String.IsNullOrEmpty(dbName))
             {
-
                 cmd.CommandText = "Select count(*) from CompanyUsers_Table";
                 SqlDataAdapter usersList = new SqlDataAdapter();
                 DataTable fetchedUsers = new DataTable();
+                con.Open();
                 usersList.SelectCommand = cmd;
                 usersList.Fill(fetchedUsers);
+                con.Close();
 
                 if(Convert.ToInt32(fetchedUsers.Rows[0][0].ToString()) > 0)
                 {
@@ -74,7 +75,8 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (Users users in usr)
                     {
-                        cmd.CommandText = "Insert Into CompanyUsers_Table Values('" + users.userName + "','" + users.userPassword + "'," + users.userStatus +  ")";
+                        cmd.CommandText = "Insert Into CompanyUsers_Table Values('" + users.userName + "','" + users.userPassword + "'," + users.userStatus +  
+                                          "," + users.isRetailer + ",'" + users.customerName + "')";
                         cmd.ExecuteNonQuery();
                     }
                     con.Close();

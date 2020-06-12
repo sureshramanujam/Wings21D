@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
         // GET api/values
         //public IEnumerable<string> Get()
-        public HttpResponseMessage Get(string dbName, string pc)
+        public HttpResponseMessage Get(string dbName, string pc, string zerostock)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -34,26 +34,55 @@ namespace Wings21D.Controllers
                     
                         if(pc.ToUpper()!="ALL PROFIT CENTERS")
                         {
-                            cmd.CommandText = "With ProductsList As ( " +
-                                              "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
-                                              "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
-                                              "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
-                                              "From Trade_Items_Table a " +
-                                              "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
-                                              "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
-                                              ") Select * from ProductsList Where BalanceQty>0 And ProfitCenterName='" + pc + 
-                                              "' Order By ItemName";
+                            if (zerostock == "true")
+                            {
+                                cmd.CommandText = "With ProductsList As ( " +
+                                                  "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                                                  "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
+                                                  "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
+                                                  "From Trade_Items_Table a " +
+                                                  "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                                  "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
+                                                  ") Select * from ProductsList Where ProfitCenterName='" + pc +
+                                                  "' Order By ItemName";
+                            }
+                            else
+                            {
+                                cmd.CommandText = "With ProductsList As ( " +
+                                                  "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                                                  "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
+                                                  "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
+                                                  "From Trade_Items_Table a " +
+                                                  "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                                  "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
+                                                  ") Select * from ProductsList Where BalanceQty>0 And ProfitCenterName='" + pc +
+                                                  "' Order By ItemName";
+                            }
                         }
                         else
                         {
-                            cmd.CommandText = "With ProductsList As ( " +
-                                      "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
-                                      "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
-                                      "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
-                                      "From Trade_Items_Table a " +
-                                      "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
-                                      "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
-                                      ") Select * from ProductsList Where BalanceQty > 0 Order By ItemName";
+                            if (zerostock == "true")
+                            {
+                                cmd.CommandText = "With ProductsList As ( " +
+                                           "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                                           "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
+                                           "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
+                                           "From Trade_Items_Table a " +
+                                           "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                           "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
+                                           ") Select * from ProductsList Order By ItemName";
+                            }
+                            else
+                            {
+                                cmd.CommandText = "With ProductsList As ( " +
+                                          "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
+                                          "Sum(a.RatePerPiece)RatePerPiece, Sum(a.RatePerPack)RatePerPack, Sum(a.ItemMRP) ItemMRP, " +
+                                          "ISNULL(Sum(b.AvailableQtyInPieces),0) BalanceQty " +
+                                          "From Trade_Items_Table a " +
+                                          "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
+                                          "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
+                                          ") Select * from ProductsList Where BalanceQty>0 Order By ItemName";
+                            }
                         }
 
                     da.SelectCommand = cmd;

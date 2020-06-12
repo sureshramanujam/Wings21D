@@ -80,40 +80,48 @@ namespace Wings21D.Controllers
 
             if (!String.IsNullOrEmpty(dbName))
             {
-                if (!String.IsNullOrEmpty(uploadAll))
+                if (uploadAll.Trim().ToLower() == "true")
                 {
-                    if (uploadAll.Trim().ToLower() == "true")
+                    try
                     {
-                        try
-                        {
-                            con.Open();
-                            cmd.CommandText = "Delete from Trade_Locations_Table";
-                            cmd.ExecuteNonQuery();
-                            con.Close();
-                        }
-                        catch (Exception e)
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-                    }
-                }
-
-                try
-                {
-                    con.Open();
-                    foreach (TradeLocations lcs in locations)
-                    {
-                        cmd.CommandText = "Insert Into Trade_Locations_Table Values('" + lcs.locationName + "')";
+                        con.Open();
+                        cmd.CommandText = "Delete from Trade_Locations_Table";
                         cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                        con.Close();
 
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                        con.Open();
+                        foreach (TradeLocations lcs in locations)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Locations_Table Values('" + lcs.locationName + "')";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    try
+                    {
+                        con.Open();
+                        foreach (TradeLocations lcs in locations)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Locations_Table Values('" + lcs.locationName + "')";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
             }
             else
             {

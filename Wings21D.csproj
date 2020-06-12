@@ -168,8 +168,14 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BooksCustomerBalanceController.cs" />
     <Compile Include="Controllers\BooksCustomerLedgerController.cs" />
+    <Compile Include="Controllers\BooksCustomerSalesInvoicesDesktopController.cs" />
+    <Compile Include="Controllers\BooksSalesInvoicePaymentsController.cs" />
+    <Compile Include="Controllers\BooksSalesInvoiceController.cs" />
+    <Compile Include="Controllers\BranchesController.cs" />
+    <Compile Include="Controllers\DivisionsController.cs" />
+    <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\TradeCustomerLedgerController.cs" />
-    <Compile Include="Controllers\CompanyDetailsUpdaterController.cs" />
+    <Compile Include="Controllers\CompanyDetailsController.cs" />
     <Compile Include="Controllers\BooksCustomersController.cs" />
     <Compile Include="Controllers\BooksGetPendingSalesOrdersController.cs" />
     <Compile Include="Controllers\BooksGetDesktopCustomersReceiptsController.cs" />
@@ -202,6 +208,7 @@
     <Compile Include="Controllers\TradeBeatCollectionsDashboardController.cs" />
     <Compile Include="Controllers\TradeGetSalesOrderValueController.cs" />
     <Compile Include="Controllers\TradeGetSalesOrderLastNumberController.cs" />
+    <Compile Include="Controllers\LocationsController.cs" />
     <Compile Include="Controllers\TradeSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrderController.cs" />
     <Compile Include="Controllers\UpdateTransactionFlagController.cs" />
@@ -224,6 +231,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BooksCustomerLedgerModel.cs" />
+    <Compile Include="Models\BooksCustomersSalesInvoicesDesktopModel.cs" />
+    <Compile Include="Models\BooksSalesInvoiceEntryPaymentsModel.cs" />
+    <Compile Include="Models\BooksSalesInvoiceEntryModel.cs" />
+    <Compile Include="Models\ProjectsModel.cs" />
+    <Compile Include="Models\DivisionsModel.cs" />
+    <Compile Include="Models\BranchesModel.cs" />
     <Compile Include="Models\TradeCustomerLedgerModel.cs" />
     <Compile Include="Models\BooksCustomerBalanceModel.cs" />
     <Compile Include="Models\BooksCustomersPendingDeliveriesModel.cs" />
@@ -241,6 +254,7 @@
     <Compile Include="Models\CompanyDetailsModel.cs" />
     <Compile Include="Models\DocumentNumbersModel.cs" />
     <Compile Include="Models\BooksSalesOrderEntryModel.cs" />
+    <Compile Include="Models\LocationsModel.cs" />
     <Compile Include="Models\TradeSalesOrderEntryModel.cs" />
     <Compile Include="Models\TradeItemBalanceModel.cs" />
     <Compile Include="Models\TradeCustomerBalanceModel.cs" />

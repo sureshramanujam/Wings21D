@@ -62,6 +62,7 @@ namespace Wings21D.Controllers
             var headers = re.Headers;
             String dbName = String.Empty;
             String uploadAll = String.Empty;
+            bool uploadEverything = false;
 
             if (headers.Contains("dbname"))
             {
@@ -71,15 +72,16 @@ namespace Wings21D.Controllers
             if (headers.Contains("uploadall"))
             {
                 uploadAll = headers.GetValues("uploadall").First();
+                uploadEverything = uploadAll == "true" ? true : false;
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
-            if (!String.IsNullOrEmpty(uploadAll))
+            if (!String.IsNullOrEmpty(dbName))
             {
-                if (uploadAll.Trim().ToLower() == "true")
+                if (uploadEverything)
                 {
                     try
                     {
@@ -87,32 +89,40 @@ namespace Wings21D.Controllers
                         cmd.CommandText = "Delete from Trade_Beats_Table";
                         cmd.ExecuteNonQuery();
                         con.Close();
+
+                        con.Open();
+                        foreach (TradeBeats bts in beats)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + bts.beatName + "')";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                     catch (Exception e)
                     {
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
-            }
-
-            if (!String.IsNullOrEmpty(dbName))
-            {
-                try
+                else
                 {
-                    con.Open();
-                    foreach (TradeBeats bts in beats)
+                    try
                     {
-                        cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + bts.beatName + "')";
-                        cmd.ExecuteNonQuery();
+                        con.Open();
+                        foreach (TradeBeats bts in beats)
+                        {
+                            cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + bts.beatName + "')";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
                     }
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
             }
-
             return new HttpResponseMessage(HttpStatusCode.Created);
         }
     }

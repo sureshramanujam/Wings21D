@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Wings21D.Controllers
 {
-    public class BooksCustomerSalesOrdersDesktopController : ApiController
+    public class BooksCustomerSalesInvoicesDesktopController : ApiController
     {
 
         // GET api/<controller>
@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable DesktopSalesOrders = new DataTable();
+            DataTable DesktopSalesInvoices = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -32,11 +32,11 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersSalesOrdersBooked_Desktop_Table Where CustomerName='" + custName + "' " + 
+                    cmd.CommandText = "Select * from Books_CustomersSalesInvoices_Desktop_Table Where CustomerName='" + custName + "' " + 
                                       "Order by OrderDate, OrderNumber";
                     da.SelectCommand = cmd;
-                    DesktopSalesOrders.TableName = "DesktopSalesOrders";
-                    da.Fill(DesktopSalesOrders);
+                    DesktopSalesInvoices.TableName = "DesktopSalesOrders";
+                    da.Fill(DesktopSalesInvoices);
                     con.Close();
                 }
                 catch (Exception ex)
@@ -46,7 +46,7 @@ namespace Wings21D.Controllers
 
                 var returnResponseObject = new
                 {
-                    DesktopSalesOrders = DesktopSalesOrders
+                    DesktopSalesInvoices = DesktopSalesInvoices
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
@@ -66,7 +66,7 @@ namespace Wings21D.Controllers
         }
 
         // POST api/<controller>                
-        public string Post(List<BooksCustomersSalesOrdersDesktop> CSOB)
+        public string Post(List<BooksCustomersSalesInvoicesDesktop> CSID)
         {
             var re = Request;
             var headers = re.Headers;
@@ -89,31 +89,33 @@ namespace Wings21D.Controllers
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
-                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersSalesOrdersBooked_Desktop_Table'";
+                cmd.CommandText = "Select name from sys.tables where name='Books_CustomersSalesInvoices_Desktop_Table'";
                 da.SelectCommand = cmd;
                 dt.Clear();
                 da.Fill(dt);
                 con.Close();
 
-                string orderNumbers = String.Empty;
+                string invoiceNumbers = String.Empty;
 
                 if (dt.Rows.Count > 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersSalesOrdersBooked_Desktop_Table";
+                    cmd.CommandText = "Delete From Books_CustomersSalesInvoices_Desktop_Table";
                     cmd.ExecuteNonQuery();
                     con.Close();
                     con.Open();
                     
-                    foreach (BooksCustomersSalesOrdersDesktop a in CSOB)
+                    foreach (BooksCustomersSalesInvoicesDesktop a in CSID)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
-                                          String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
-                                          a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
+                        cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
+                                          a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
+                                          a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
+                                          a.GSTRate + "'," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
+                                          a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
-                        orderNumbers += a.OrderNumber + "$";
-                        orderNumbers = orderNumbers.Replace('\\', ' ');
+                        invoiceNumbers += a.InvoiceNumber + "$";
+                        invoiceNumbers = invoiceNumbers.Replace('\\', ' ');
                     }
                     con.Close();
                 }
@@ -122,30 +124,40 @@ namespace Wings21D.Controllers
                     try
                     {
                         con.Open();
-                        cmd.CommandText = "Create Table Books_CustomersSalesOrdersBooked_Desktop_Table (" +
-                                              "OrderNumber nchar(100) null," +
-                                              "OrderDate date null," +
-                                              "DueDate date null," +
+                        cmd.CommandText = "Create Table Books_CustomersSalesInvoices_Desktop_Table (" +
+                                              "TransactionType nvarchar(60) null," +
                                               "CustomerName nvarchar(265) null," +
+                                              "InvoiceNumber nchar(100) null," +
+                                              "InvoiceDate date null," +
+                                              "InvoiceType nchar(20) null," +
+                                              "InvoiceSubType nchar(20) null," +
+                                              "EWayBillNumber nvarchar(30) null," +
                                               "ProductName nvarchar(265) null," +
-                                              "BookedQty decimal(18,2) null," +
-                                              "LineAmount decimal(18,2) null," +
+                                              "InvoiceQty decimal(18,2) null," +
+                                              "GSTRate nvarchar(30) null," +
+                                              "DiscountAmount decimal(18,2) null," +
+                                              "GSTAmount decimal(18,2) null," +
+                                              "CessAmount decimal(18,2) null," +
+                                              "LineAmount decimal(18,2) null," +                                              
+                                              "Remarks nvarchar(265) null," +
+                                              "OrderNumber nchar(50) null," +
+                                              "DeliveryNumber nchar(50) null," +
                                               "Username nvarchar(265) null)";
                         cmd.ExecuteNonQuery();
-                        con.Close();
 
-                        con.Open();
-                        foreach (BooksCustomersSalesOrdersDesktop a in CSOB)
+                        foreach (BooksCustomersSalesInvoicesDesktop a in CSID)
                         {
                             try
                             {
-                                cmd.CommandText = "Insert Into Books_CustomersSalesOrdersBooked_Desktop_Table Values('" + a.OrderNumber + "','" +
-                                              String.Format("{0:yyyy-MM-dd}", a.OrderDate) + "','" + String.Format("{0:yyyy-MM-dd}", a.DueDate) + "','" +
-                                              a.CustomerName + "','" + a.ProductName + "'," + a.BookedQuantity + "," + a.LineAmount + ",'" + a.Username + "')";
+                                cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
+                                          a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
+                                          a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
+                                          a.GSTRate + "'," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
+                                          a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
 
                                 cmd.ExecuteNonQuery();
-                                orderNumbers += a.OrderNumber + "$";
-                                orderNumbers = orderNumbers.Replace('\\',' ');
+                                invoiceNumbers += a.InvoiceNumber + "$";
+                                invoiceNumbers = invoiceNumbers.Replace('\\', ' ');
                             }
                             catch
                             {
@@ -155,13 +167,12 @@ namespace Wings21D.Controllers
                         con.Close();
                     }
                     catch (Exception ex)
-                    {
-                        //return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    {  
                         return "Unable to insert data.";
                     }
                     return "Error";
                 }
-                return orderNumbers;
+                return invoiceNumbers;
             }
             else
             {

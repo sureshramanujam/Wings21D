@@ -80,31 +80,15 @@ namespace Wings21D.Controllers
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-
-            /*
-            con.Open();
-            cmd.CommandText = "Select * From Books_CustomersPendingBills_Table";
-            SqlDataAdapter customerBalancesAdapter = new SqlDataAdapter();
-            DataTable availableCustoemrBalances = new DataTable();
-            customerBalancesAdapter.SelectCommand = cmd;
-            customerBalancesAdapter.Fill(availableCustoemrBalances);
-            con.Close();
-            */
-
+            
             if (!String.IsNullOrEmpty(dbName))
             {
                 if (uploadAll.ToLower().Trim() == "true")
                 {
                     try
-                    {
-                        /*
-                        if (availableCustoemrBalances.Rows.Count > 0)
-                        {   
-                        }
-                        */
-
+                    {   
                         con.Open();
-                        cmd.CommandText = "Delete * from Books_CustomersPendingBills_Table";
+                        cmd.CommandText = "Delete From Books_CustomersPendingBills_Table";
                         cmd.ExecuteNonQuery();
                         con.Close();
 
@@ -126,16 +110,23 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    con.Open();
-                    foreach (BooksCustomerBalance bcb in customerBalance)
+                    try
                     {
-                        bcb.customerName = bcb.customerName.Replace("'", "''");
-                        cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
-                                          + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
-                        cmd.ExecuteNonQuery();
+                        con.Open();
+                        foreach (BooksCustomerBalance bcb in customerBalance)
+                        {
+                            bcb.customerName = bcb.customerName.Replace("'", "''");
+                            cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
+                                              + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    con.Close();
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    catch (SqlException ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
                 }
             }
             else

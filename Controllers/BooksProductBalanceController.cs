@@ -77,30 +77,14 @@ namespace Wings21D.Controllers
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
 
-            /*
-            con.Open();
-            SqlDataAdapter productBalancesAdapter = new SqlDataAdapter();
-            DataTable availableProductBalances = new DataTable();
-            cmd.CommandText = "Select * From Books_ProductBalance_table";
-            productBalancesAdapter.SelectCommand = cmd;
-            productBalancesAdapter.Fill(availableProductBalances);
-            con.Close();
-            */
-
             if (!String.IsNullOrEmpty(dbName))
             {
                 if (uploadAll.ToLower().Trim() == "true")
                 {
                     try
-                    {
-                        /*
-                        if (availableProductBalances.Rows.Count > 0)
-                        {  
-                        }
-                        */
-
+                    {   
                         con.Open();
-                        cmd.CommandText = "Delete * from Books_ProductBalance_Table";
+                        cmd.CommandText = "Delete From Books_ProductBalance_Table";
                         cmd.ExecuteNonQuery();
                         con.Close();
 
@@ -123,15 +107,22 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    con.Open();
-                    foreach (BooksProductBalance bpb in productbalance)
+                    try
                     {
-                        cmd.CommandText = "Insert Into Books_ProductBalance_Table Values('" + bpb.productName + "', '" +
-                                          bpb.locationName + "'," + bpb.availableQty + ")";
-                        cmd.ExecuteNonQuery();
+                        con.Open();
+                        foreach (BooksProductBalance bpb in productbalance)
+                        {
+                            cmd.CommandText = "Insert Into Books_ProductBalance_Table Values('" + bpb.productName + "', '" +
+                                              bpb.locationName + "'," + bpb.availableQty + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                        return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    con.Close();
-                    return new HttpResponseMessage(HttpStatusCode.Created);
+                    catch(SqlException ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
                 }
             }
             else

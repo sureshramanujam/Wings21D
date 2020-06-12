@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string custName)
+        public HttpResponseMessage Get(string dbName, string custName, string fromDate, string toDate)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -23,7 +23,7 @@ namespace Wings21D.Controllers
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable CustomerLedger = new DataTable();            
 
-            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
+            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName) && !String.IsNullOrEmpty(fromDate) && !String.IsNullOrEmpty(toDate))
             {
                 try
                 {
@@ -32,8 +32,26 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Trade_Customer_Ledger_Table Where Account='" + custName + "' " + 
-                                      "Order by VoucherDate, VoucherNumber";
+                    cmd.CommandText = "Select VoucherNumber, " +
+                                      "CASE When TransactionType like 'Sales Invoice%' Then 'Sales' " +
+                                      "When TransactionType like 'Sales Return%' Then 'Sales Return' " +
+                                      "When TransactionType like 'cash collectione%' Then 'Cash Receipt' " +
+                                      "When TransactionType like 'Cashwise%' Then 'Cash-wise Receipt' " +
+                                      "When TransactionType like 'cheque%' Then 'Cheque Receipt' " +
+                                      "When TransactionType like 'debit note%' Then 'Debit Note' " +
+                                      "When TransactionType like 'credit note%' Then 'Credit Note' " +
+                                      "Else TransactionType End As TransactionType, " +
+                                      "CASE When TransactionType like 'sales invoice%' And ContraAccount='Cash Account' Then 'Cash Sale' " +
+                                      "When TransactionType like 'sales invoice%' And ContraAccount='Sales Account' Then 'Credit Sale' " +
+                                      "When TransactionType like 'Sales Return%' Then 'Sales Return' " +
+                                      "When TransactionType like 'Cashwise%' Then 'Receipt' " +
+                                      "When TransactionType like 'cheque%' Then 'Receipt' " +
+                                      "When TransactionType like 'debit note%' Then 'Debit Note' " +
+                                      "When TransactionType like 'credit note%' Then 'Credit Note' End As 'SaleType', " +
+                                      "Convert(date,VoucherDate,105) as 'VoucherDate', Account, ContraAccount, DebitAmount, CreditAmount,Remarks " +
+                                      "From Trade_Customer_Ledger_Table " +
+                                      "Where Account='" + custName +"' And VoucherDate Between '" + fromDate + "' And '" + toDate + "' " +
+                                      "Order By VoucherDate";
                     da.SelectCommand = cmd;
                     CustomerLedger.TableName = "CustomerLedger";
                     da.Fill(CustomerLedger);

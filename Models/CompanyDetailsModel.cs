@@ -9,7 +9,7 @@ namespace Wings21D.Models
     {   
         public string CompanyDatabaseName { get; set; }
         public string CompanyName { get; set; }
-        public string CompanyLegaName { get; set; }
+        public string CompanyLegalName { get; set; }
         public string CompanyTradeName { get; set; }
         public string CompanyAddressLine1 { get; set; }
         public string CompanyAddressLine2 { get; set; }

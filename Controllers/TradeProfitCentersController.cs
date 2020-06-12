@@ -92,30 +92,40 @@ namespace Wings21D.Controllers
                             cmd.CommandText = "Delete from Trade_ProfitCenters_Table";
                             cmd.ExecuteNonQuery();
                             con.Close();
+
+                            con.Open();
+                            foreach (TradeProfitCenters pcs in pc)
+                            {
+                                cmd.CommandText = "Insert Into Trade_ProfitCenters_Table Values('" + pcs.profitCenterName + "')";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
                         }
                         catch (Exception e)
                         {
                             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                         }
                     }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
-
-                try
+                else
                 {
-                    con.Open();
-                    foreach (TradeProfitCenters pcs in pc)
+                    try
                     {
-                        cmd.CommandText = "Insert Into Trade_ProfitCenters_Table Values('" + pcs.profitCenterName + "')";
-                        cmd.ExecuteNonQuery();
+                        con.Open();
+                        foreach (TradeProfitCenters pcs in pc)
+                        {
+                            cmd.CommandText = "Insert Into Trade_ProfitCenters_Table Values('" + pcs.profitCenterName + "')";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
                     }
-                    con.Close();
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
                 }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
-
-                return new HttpResponseMessage(HttpStatusCode.Created);
             }
             else
             {

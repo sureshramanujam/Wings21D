@@ -109,61 +109,58 @@ namespace Wings21D.Controllers
 
             if (!String.IsNullOrEmpty(dbName))
             {
-                if (!String.IsNullOrEmpty(uploadAll))
+                if (uploadAll.Trim().ToLower() == "true")
                 {
-                    if (uploadAll.Trim().ToLower() == "true")
+                    try
                     {
-                        try
-                        {
-                            con.Open();
-                            cmd.CommandText = "Delete from Trade_Customers_Table";
-                            cmd.ExecuteNonQuery();
-                            con.Close();
-
-                            con.Open();
-                            foreach (TradeCustomers cust in customers)
-                            {
-                                cust.customerName = cust.customerName.Replace("'", "''");
-                                cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
-                                cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
-                                "'," + cust.activeStatus + ")";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception e)
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-                    }
-                }
-
-                try
-                {
-                    con.Open();
-                    foreach (TradeCustomers cust in customers)
-                    {
-                        cust.customerName = cust.customerName.Replace("'", "''");
-                        cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
-                        cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
-                        "'," + cust.activeStatus + ")";
+                        con.Open();
+                        cmd.CommandText = "Delete from Trade_Customers_Table";
                         cmd.ExecuteNonQuery();
-                    }
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                        con.Close();
 
-                return new HttpResponseMessage(HttpStatusCode.Created);
+                        con.Open();
+                        foreach (TradeCustomers cust in customers)
+                        {
+                            cust.customerName = cust.customerName.Replace("'", "''");
+                            cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
+                            cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
+                            "'," + cust.activeStatus + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception e)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
+                else
+                {
+                    try
+                    {
+                        con.Open();
+                        foreach (TradeCustomers cust in customers)
+                        {
+                            cust.customerName = cust.customerName.Replace("'", "''");
+                            cmd.CommandText = "Insert Into Trade_Customers_Table Values('" + cust.customerName + "', '" +
+                            cust.beatName + "','" + cust.gstNumber + "','" + cust.customerCity +
+                            "'," + cust.activeStatus + ")";
+                            cmd.ExecuteNonQuery();
+                        }
+                        con.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                    return new HttpResponseMessage(HttpStatusCode.Created);
+                }
             }
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
-
         }
-
     }
 }
