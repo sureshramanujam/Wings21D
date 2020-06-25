@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using Wings21D.Models;
 using System.Linq;
+using System.Globalization;
+using System.Threading;
 
 namespace Wings21D.Controllers
 {
@@ -21,7 +23,8 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable CustomerLedger = new DataTable();            
+            DataTable CustomerLedger = new DataTable();
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName) && !String.IsNullOrEmpty(fromDate) && !String.IsNullOrEmpty(toDate))
             {
@@ -32,25 +35,33 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
+                    DateTime dt = DateTime.Parse(fromDate);
+                    DateTime dt1 = DateTime.Parse(toDate);
+
                     cmd.CommandText = "Select VoucherNumber, " +
                                       "CASE When TransactionType like 'Sales Invoice%' Then 'Sales' " +
                                       "When TransactionType like 'Sales Return%' Then 'Sales Return' " +
                                       "When TransactionType like 'cash collectione%' Then 'Cash Receipt' " +
+                                      "When TransactionType like 'cash receipt%' Then 'Cash Receipt' " +
                                       "When TransactionType like 'Cashwise%' Then 'Cash-wise Receipt' " +
                                       "When TransactionType like 'cheque%' Then 'Cheque Receipt' " +
                                       "When TransactionType like 'debit note%' Then 'Debit Note' " +
                                       "When TransactionType like 'credit note%' Then 'Credit Note' " +
+                                      "When TransactionType like 'opening%' Then 'Opening' " +
                                       "Else TransactionType End As TransactionType, " +
                                       "CASE When TransactionType like 'sales invoice%' And ContraAccount='Cash Account' Then 'Cash Sale' " +
                                       "When TransactionType like 'sales invoice%' And ContraAccount='Sales Account' Then 'Credit Sale' " +
                                       "When TransactionType like 'Sales Return%' Then 'Sales Return' " +
                                       "When TransactionType like 'Cashwise%' Then 'Receipt' " +
+                                      "When TransactionType like 'cash receipt%' Then 'Cash Receipt' " +
                                       "When TransactionType like 'cheque%' Then 'Receipt' " +
                                       "When TransactionType like 'debit note%' Then 'Debit Note' " +
+                                      "When TransactionType like 'opening%' Then 'Opening' " +
                                       "When TransactionType like 'credit note%' Then 'Credit Note' End As 'SaleType', " +
-                                      "Convert(date,VoucherDate,105) as 'VoucherDate', Account, ContraAccount, DebitAmount, CreditAmount,Remarks " +
+                                      "Convert(varchar,VoucherDate,105) as 'VoucherDate', Account, ContraAccount, DebitAmount, CreditAmount,Remarks " +
                                       "From Trade_Customer_Ledger_Table " +
-                                      "Where Account='" + custName +"' And VoucherDate Between '" + fromDate + "' And '" + toDate + "' " +
+                                      "Where Account='" + custName +"' And Convert(varchar,VoucherDate,23) Between '" +
+                                      String.Format("{0:yyyy-MM-dd}", dt) + "' And '" + String.Format("{0:yyyy-MM-dd}", dt1) + "' " +
                                       "Order By VoucherDate";
                     da.SelectCommand = cmd;
                     CustomerLedger.TableName = "CustomerLedger";
@@ -59,7 +70,9 @@ namespace Wings21D.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    //return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    var response1 = Request.CreateResponse(HttpStatusCode.OK, ex.ToString(), MediaTypeHeaderValue.Parse("application/json"));
+                    return response1;
                 }
 
                 var returnResponseObject = new
@@ -101,57 +114,51 @@ namespace Wings21D.Controllers
             
             if (!String.IsNullOrEmpty(dbName))
             {
-                con.Open();
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
 
-                if(uploadAll.Trim().ToLower() == "true")
-                {
-                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
-                    da.SelectCommand = cmd;
-                    dt.Clear();
-                    da.Fill(dt);
-                    con.Close();
+                con.Open();
+                cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
+                da.SelectCommand = cmd;
+                dt.Clear();
+                da.Fill(dt);
+                con.Close();
 
-                    if (dt.Rows.Count > 0)
+                if (dt.Rows.Count > 0)
+                {
+                    if (uploadAll.Trim().ToLower() == "true")
                     {
                         con.Open();
                         cmd.CommandText = "Delete From Trade_Customer_Ledger_Table";
                         cmd.ExecuteNonQuery();
                         con.Close();
 
-                        con.Open();
-
-                        foreach (TradeCustomerLedger a in TCL)
+                        try
                         {
-                            a.Account = a.Account.Replace("'", "''");
-                            a.ContraAccount = a.ContraAccount.Replace("'", "''");
-                            a.Remarks = a.Remarks.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
-                                                     a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
-                                                    a.Remarks + "')";
-                            cmd.ExecuteNonQuery();
+                            con.Open();
+                            foreach (TradeCustomerLedger a in TCL)
+                            {
+                                a.Account = a.Account.Replace("'", "''");
+                                a.ContraAccount = a.ContraAccount.Replace("'", "''");
+                                a.Remarks = a.Remarks.Replace("'", "''");
+                                cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
+                                                         a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
+                                                        a.Remarks + "')";
+                                cmd.ExecuteNonQuery();
+                            }
+                            con.Close();
+                            return new HttpResponseMessage(HttpStatusCode.Created);
                         }
-                        con.Close();
+                        catch
+                        {
+                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                        }
                     }
                     else
                     {
                         try
                         {
                             con.Open();
-
-                            cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
-                                              "TransactionType nvarchar(50) null," +
-                                              "VoucherNumber nvarchar(100) null," +
-                                              "VoucherDate date null," +
-                                              "Account nvarchar(265) null," +
-                                              "ContraAccount nvarchar(265) null," +
-                                              "DebitAmount decimal(18,2) null," +
-                                              "CreditAmount decimal(18,2) null," +
-                                              "BalanceAmount decimal(18,2) null," +
-                                              "Remarks nvarchar(265) null)";
-                            cmd.ExecuteNonQuery();
-
                             foreach (TradeCustomerLedger a in TCL)
                             {
                                 a.Account = a.Account.Replace("'", "''");
@@ -165,23 +172,29 @@ namespace Wings21D.Controllers
                             con.Close();
                         }
                         catch (Exception ex)
-                        {
-                            //return "Unable to insert data.";
+                        {   
                             return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                         }
-                        //return voucherNumbers;
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                 }
                 else
                 {
-                    cmd.CommandText = "Select name from sys.tables where name='Trade_Customer_Ledger_Table'";
-                    da.SelectCommand = cmd;
-                    dt.Clear();
-                    da.Fill(dt);
+                    con.Open();
+                    cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
+                                      "TransactionType nvarchar(50) null," +
+                                      "VoucherNumber nvarchar(100) null," +
+                                      "VoucherDate date null," +
+                                      "Account nvarchar(265) null," +
+                                      "ContraAccount nvarchar(265) null," +
+                                      "DebitAmount decimal(18,2) null," +
+                                      "CreditAmount decimal(18,2) null," +
+                                      "BalanceAmount decimal(18,2) null," +
+                                      "Remarks nvarchar(265) null)";
+                    cmd.ExecuteNonQuery();
                     con.Close();
 
-                    if (dt.Rows.Count > 0)
+                    try
                     {
                         con.Open();
                         foreach (TradeCustomerLedger a in TCL)
@@ -195,44 +208,11 @@ namespace Wings21D.Controllers
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
-                    }
-                    else
-                    {
-                        try
-                        {
-                            con.Open();
-
-                            cmd.CommandText = "Create Table Trade_Customer_Ledger_Table (" +
-                                              "TransactionType nvarchar(50) null," +
-                                              "VoucherNumber nvarchar(100) null," +
-                                              "VoucherDate date null," +
-                                              "Account nvarchar(265) null," +
-                                              "ContraAccount nvarchar(265) null," +
-                                              "DebitAmount decimal(18,2) null," +
-                                              "CreditAmount decimal(18,2) null," +
-                                              "BalanceAmount decimal(18,2) null," +
-                                              "Remarks nvarchar(265) null)";
-                            cmd.ExecuteNonQuery();
-
-                            foreach (TradeCustomerLedger a in TCL)
-                            {
-                                a.Account = a.Account.Replace("'", "''");
-                                a.ContraAccount = a.ContraAccount.Replace("'", "''");
-                                a.Remarks = a.Remarks.Replace("'", "''");
-                                cmd.CommandText = "Insert Into Trade_Customer_Ledger_Table Values('" + a.TransactionType + "','" + a.VoucherNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" +
-                                                  a.Account + "','" + a.ContraAccount + "'," + a.DebitAmount + "," + a.CreditAmount + "," + a.BalanceAmount + ",'" +
-                                                 a.Remarks + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            //return "Unable to insert data.";
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-                        //return voucherNumbers;
                         return new HttpResponseMessage(HttpStatusCode.Created);
+                    }
+                    catch
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
             }
@@ -240,8 +220,6 @@ namespace Wings21D.Controllers
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
-            //return voucherNumbers;
-            return new HttpResponseMessage(HttpStatusCode.Created);
         }
     }
 }

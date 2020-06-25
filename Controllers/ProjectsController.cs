@@ -136,53 +136,25 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    con.Open();
-                    cmd.CommandText = "Create Table Projects_Table (" +
-                                         "ProjectName nvarchar(200) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    if (uploadAll.Trim().ToLower() == "true")
+                    try
                     {
-                        try
-                        {
-                            con.Open();
-                            cmd.CommandText = "Delete from Projects_Table";
-                            cmd.ExecuteNonQuery();
-                            con.Close();
+                        con.Open();
+                        cmd.CommandText = "Create Table Projects_Table (ProjectName nvarchar(200) null)";
+                        cmd.ExecuteNonQuery();
+                        con.Close();
 
-                            con.Open();
-                            foreach (Projects lcs in prj)
-                            {
-                                cmd.CommandText = "Insert Into Projects_Table Values('" + lcs.ProjectName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception e)
+                        con.Open();
+                        foreach (Projects lcs in prj)
                         {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            cmd.CommandText = "Insert Into Projects_Table Values('" + lcs.ProjectName + "')";
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    else
+                    catch
                     {
-                        try
-                        {
-                            con.Open();
-                            foreach (Projects lcs in prj)
-                            {
-                                cmd.CommandText = "Insert Into Projects_Table Values('" + lcs.ProjectName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-
-                        return new HttpResponseMessage(HttpStatusCode.Created);
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
             }

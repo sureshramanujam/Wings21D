@@ -136,53 +136,26 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    con.Open();
-                    cmd.CommandText = "Create Table Branches_Table (" +
-                                         "BranchName nvarchar(200) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    if (uploadAll.Trim().ToLower() == "true")
+                    try
                     {
-                        try
-                        {
-                            con.Open();
-                            cmd.CommandText = "Delete from Branches_Table";
-                            cmd.ExecuteNonQuery();
-                            con.Close();
+                        con.Open();
+                        cmd.CommandText = "Create Table Branches_Table (" +
+                                             "BranchName nvarchar(200) null)";
+                        cmd.ExecuteNonQuery();
+                        con.Close();
 
-                            con.Open();
-                            foreach (Branches lcs in Branches)
-                            {
-                                cmd.CommandText = "Insert Into Branches_Table Values('" + lcs.BranchName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception e)
+                        con.Open();
+                        foreach (Branches lcs in Branches)
                         {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            cmd.CommandText = "Insert Into Branches_Table Values('" + lcs.BranchName + "')";
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    else
+                    catch
                     {
-                        try
-                        {
-                            con.Open();
-                            foreach (Branches lcs in Branches)
-                            {
-                                cmd.CommandText = "Insert Into Trade_Branches_Table Values('" + lcs.BranchName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-
-                        return new HttpResponseMessage(HttpStatusCode.Created);
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
             }

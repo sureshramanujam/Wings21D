@@ -136,53 +136,25 @@ namespace Wings21D.Controllers
                 }
                 else
                 {
-                    con.Open();
-                    cmd.CommandText = "Create Table Locations_Table (" +
-                                         "LocationName nvarchar(200) null)";
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    if (uploadAll.Trim().ToLower() == "true")
+                    try
                     {
-                        try
-                        {
-                            con.Open();
-                            cmd.CommandText = "Delete from Locations_Table";
-                            cmd.ExecuteNonQuery();
-                            con.Close();
+                        con.Open();
+                        cmd.CommandText = "Create Table Locations_Table (LocationName nvarchar(200) null)";
+                        cmd.ExecuteNonQuery();
+                        con.Close();
 
-                            con.Open();
-                            foreach (Locations lcs in locations)
-                            {
-                                cmd.CommandText = "Insert Into Locations_Table Values('" + lcs.LocationName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception e)
+                        con.Open();
+                        foreach (Locations lcs in locations)
                         {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                            cmd.CommandText = "Insert Into Locations_Table Values('" + lcs.LocationName + "')";
+                            cmd.ExecuteNonQuery();
                         }
+                        con.Close();
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
-                    else
+                    catch
                     {
-                        try
-                        {
-                            con.Open();
-                            foreach (Locations lcs in locations)
-                            {
-                                cmd.CommandText = "Insert Into Trade_Locations_Table Values('" + lcs.LocationName + "')";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                        }
-
-                        return new HttpResponseMessage(HttpStatusCode.Created);
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
             }
