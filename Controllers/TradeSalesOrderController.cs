@@ -33,9 +33,9 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     DateTime asonDate = DateTime.Parse(asAtDate);
 
-                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
-                                      "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() +
+                                      "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToString() +
                                       "' And a.DownloadedFlag=0 Order By a.DocumentNo";
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
