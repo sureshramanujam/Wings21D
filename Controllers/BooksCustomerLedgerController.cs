@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string custName)
+        public HttpResponseMessage Get(string dbName, string custName, string fromDate, string toDate)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -23,7 +23,7 @@ namespace Wings21D.Controllers
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable CustomerLedger = new DataTable();            
 
-            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
+            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName) && !String.IsNullOrEmpty(fromDate) && !String.IsNullOrEmpty(toDate))
             {
                 try
                 {
@@ -32,7 +32,11 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' " + 
+                    DateTime dt = DateTime.Parse(fromDate);
+                    DateTime dt1 = DateTime.Parse(toDate);
+
+                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' And Convert(varchar,VoucherDate,23) Between '" +
+                                      String.Format("{0:yyyy-MM-dd}", dt) + "' And '" + String.Format("{0:yyyy-MM-dd}", dt1) + "' " + 
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
                     CustomerLedger.TableName = "CustomerLedger";
