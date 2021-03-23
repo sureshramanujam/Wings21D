@@ -32,8 +32,8 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersSalesInvoices_Desktop_Table Where CustomerName='" + custName + "' " + 
-                                      "Order by OrderDate, OrderNumber";
+                    cmd.CommandText = "Select * from Books_CustomersSalesInvoices_Desktop_Table Where CustomerName='" + custName + "' " +
+                                      "Order by InvoiceDate, OrderNumber";
                     da.SelectCommand = cmd;
                     DesktopSalesInvoices.TableName = "DesktopSalesOrders";
                     da.Fill(DesktopSalesInvoices);
@@ -110,7 +110,7 @@ namespace Wings21D.Controllers
                         cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
                                           a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
                                           a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
-                                          a.GSTRate + "'," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
+                                          a.GSTRate + "'," +a.DiscountAmount +","+ a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
                                           a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
 
                         cmd.ExecuteNonQuery();
@@ -152,7 +152,7 @@ namespace Wings21D.Controllers
                                 cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
                                           a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
                                           a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
-                                          a.GSTRate + "'," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
+                                          a.GSTRate + "'," + a.DiscountAmount + "," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
                                           a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
 
                                 cmd.ExecuteNonQuery();
