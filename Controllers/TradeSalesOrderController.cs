@@ -27,16 +27,37 @@ namespace Wings21D.Controllers
             {
                 try
                 {
-                    con.Open();
+                    String beatName = "BeatName";
 
+                    SqlCommand sqlCommand = new SqlCommand();
+                    DataTable dataTable = new DataTable();
+                    sqlCommand.CommandText = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='Trade_SalesOrder_Table'";
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                    sqlCommand.Connection = con;
+                    con.Open();
+                    sqlDataAdapter.SelectCommand = sqlCommand;
+                    sqlDataAdapter.Fill(dataTable);
+                    con.Close();
+
+                    con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
                     DateTime asonDate = DateTime.Parse(asAtDate);
-
-                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                    if (dataTable.AsEnumerable().Any(row => beatName == row.Field<String>("COLUMN_NAME")) && dataTable.Rows.Count > 0)
+                    {
+                        cmd.CommandText = "select DocumentNo, Convert(varchar,TransactionDate,105) as TransactionDate, CustomerName, BeatName, ProfitCenteRname, " +
+                                      "ItemName, QuantityInPieces, QuantityInPacks, TransactionRemarks, Username from Trade_SalesOrder_Table  Where " +
+                                      "convert(varchar,TransactionDate,105) <= '" + asonDate.ToString() +
+                                      "' And DownloadedFlag=0 Order By DocumentNo";
+                    }
+                    else
+                    {
+                        cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
                                       "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToString() +
                                       "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                    }
+                    
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
                     da.Fill(SalesOrders);
@@ -90,6 +111,33 @@ namespace Wings21D.Controllers
 
             if (!String.IsNullOrEmpty(dbName))
             {
+                
+                    try
+                    {
+                    SqlCommand sqlCommand = new SqlCommand();
+                    DataTable dataTable = new DataTable();
+                    sqlCommand.CommandText = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='Trade_SalesOrder_Table'";
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
+                    sqlCommand.Connection = con;
+                    con.Open();
+                    sqlDataAdapter.SelectCommand = sqlCommand;
+                    sqlDataAdapter.Fill(dataTable);
+                    con.Close();
+                    String beatName = "BeatName";
+                       if ( !dataTable.AsEnumerable().Any(row => beatName == row.Field<String>("COLUMN_NAME")) && dataTable.Rows.Count>0)
+                       {
+                        con.Open();
+                        sqlCommand.CommandText = "Alter Table Trade_SalesOrder_Table Add BeatName varchar(100)";
+                        sqlCommand.ExecuteNonQuery();
+                        con.Close();
+                       }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    }
+                
                 try
                 {
                     con.Open();
@@ -119,7 +167,7 @@ namespace Wings21D.Controllers
                                           ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + soe.customerName + "', '" + soe.itemName + "'," +
                                           soe.quantityInPieces + "," + soe.quantityInPacks + ",'" + transRemarks + "','OR-M-'," +
                                           "'OR-M-" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +  "',0,'" + soe.userName + "','" +
-                                          sProfitCenter + "')";
+                                          sProfitCenter + "','"+soe.beatName+"')";
 
                         cmd.ExecuteNonQuery();
                     }

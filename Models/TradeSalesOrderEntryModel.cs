@@ -15,5 +15,6 @@ namespace Wings21D.Models
         public string transactionRemarks { get; set; }
         public string userName { get; set; }
         public string profitCenterName { get; set; }
+        public string beatName { get; set; }
     }
 }
