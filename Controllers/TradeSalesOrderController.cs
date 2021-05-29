@@ -22,6 +22,7 @@ namespace Wings21D.Controllers
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesOrders = new DataTable();
+            String cmdText = String.Empty;
 
             if (!String.IsNullOrEmpty(dbName))
             {
@@ -33,10 +34,14 @@ namespace Wings21D.Controllers
                     cmd.Connection = con;
                     DateTime asonDate = DateTime.Parse(asAtDate);
 
-                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                    //cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                    //cmd.CommandText = "select a.DocumentNo, REPLACE(Convert(varchar,TransactionDate,2),'.','-') as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
-                                      "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToString() +
+                                      //"a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToShortDateString() +
+                                      "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,23) <= '" + asAtDate +
                                       "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                    cmdText = cmd.CommandText.ToString();
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
                     da.Fill(SalesOrders);
@@ -53,6 +58,7 @@ namespace Wings21D.Controllers
                 };
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+                //var response = Request.CreateResponse(HttpStatusCode.OK, cmdText);
                 return response;
             }
             else
