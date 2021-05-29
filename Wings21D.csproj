@@ -80,6 +80,7 @@
       <HintPath>packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
+      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -171,6 +172,7 @@
     <Compile Include="Controllers\BooksCustomerSalesInvoicesDesktopController.cs" />
     <Compile Include="Controllers\BooksSalesInvoicePaymentsController.cs" />
     <Compile Include="Controllers\BooksSalesInvoiceController.cs" />
+    <Compile Include="Controllers\BooksSalesInvoicesReportController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\DivisionsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="Controllers\TradeGetSalesOrderValueController.cs" />
     <Compile Include="Controllers\TradeGetSalesOrderLastNumberController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
+    <Compile Include="Controllers\TradeProductCategoriesController.cs" />
     <Compile Include="Controllers\TradeSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrderController.cs" />
     <Compile Include="Controllers\UpdateTransactionFlagController.cs" />
@@ -255,6 +258,7 @@
     <Compile Include="Models\DocumentNumbersModel.cs" />
     <Compile Include="Models\BooksSalesOrderEntryModel.cs" />
     <Compile Include="Models\LocationsModel.cs" />
+    <Compile Include="Models\TradeProductCategoriesModel.cs" />
     <Compile Include="Models\TradeSalesOrderEntryModel.cs" />
     <Compile Include="Models\TradeItemBalanceModel.cs" />
     <Compile Include="Models\TradeCustomerBalanceModel.cs" />
@@ -326,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\BooksSalesInvoicesReport\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
