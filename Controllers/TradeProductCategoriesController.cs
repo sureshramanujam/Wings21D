@@ -28,7 +28,10 @@ namespace Wings21D.Controllers
                 try
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand("Select Distinct(CategoryName) from Trade_ProductCategories_Table Order By CategoryName", con);
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.Connection = con;
+                    cmd.CommandText = "Select 'All Categories' As CategoryName Union " +
+                                       "Select Distinct(CategoryName) from Trade_ProductCategories_Table Order By CategoryName";
                     da.SelectCommand = cmd;
                     PCategories.TableName = "ProductCategories";
                     da.Fill(PCategories);

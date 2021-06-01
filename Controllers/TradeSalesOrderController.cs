@@ -13,7 +13,6 @@ namespace Wings21D.Controllers
 {
     public class TradeSalesOrderController : ApiController
     {
-
         // GET api/<controller>
         public HttpResponseMessage Get(string dbName, string asAtDate)
         {
@@ -48,14 +47,14 @@ namespace Wings21D.Controllers
                         cmd.CommandText = "select DocumentNo, Convert(varchar,TransactionDate,105) as TransactionDate, CustomerName, BeatName, ProfitCenteRname, " +
                                       "ItemName, QuantityInPieces, QuantityInPacks, TransactionRemarks, Username from Trade_SalesOrder_Table  Where " +
                                       "convert(varchar,TransactionDate,105) <= '" + asonDate.ToString() +
-                                      "' And DownloadedFlag=0 Order By DocumentNo";
+                                      "' And DownloadedFlag=0 Order By TransactionNo";
                     }
                     else
                     {
                         cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
                                       "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToString() +
-                                      "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                                      "' And a.DownloadedFlag=0 Order By a.TransactionNo";
                     }
                     
                     da.SelectCommand = cmd;
