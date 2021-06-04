@@ -44,14 +44,14 @@ namespace Wings21D.Controllers
                     DateTime asonDate = DateTime.Parse(asAtDate);
                     if (dataTable.AsEnumerable().Any(row => beatName == row.Field<String>("COLUMN_NAME")) && dataTable.Rows.Count > 0)
                     {
-                        cmd.CommandText = "select DocumentNo, Convert(varchar,TransactionDate,105) as TransactionDate, CustomerName, BeatName, ProfitCenteRname, " +
+                        cmd.CommandText = "select DocumentNo, Convert(varchar,TransactionDate,112) as TransactionDate, CustomerName, BeatName, ProfitCenteRname, " +
                                       "ItemName, QuantityInPieces, QuantityInPacks, TransactionRemarks, Username from Trade_SalesOrder_Table  Where " +
                                       "convert(varchar,TransactionDate,105) <= '" + asonDate.ToString() +
                                       "' And DownloadedFlag=0 Order By TransactionNo";
                     }
                     else
                     {
-                        cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,105) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
+                        cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,112) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
                                       "a.ItemName, a.QuantityInPieces, a.QuantityInPacks, a.TransactionRemarks, a.Username from Trade_SalesOrder_Table a, Trade_Customers_Table b Where " +
                                       "a.CustomerName=b.CustomerName and convert(varchar,a.TransactionDate,105) <= '" + asonDate.ToString() +
                                       "' And a.DownloadedFlag=0 Order By a.TransactionNo";
