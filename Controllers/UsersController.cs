@@ -14,26 +14,55 @@ namespace Wings21D.Controllers
     public class UsersController : ApiController
     {
         // GET api/values/5
-        public bool Get(string cName, string uName, string uPwd)
+        public HttpResponseMessage Get(string cName, string uName, string uPwd)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + cName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
+            DataTable dt = new DataTable();
 
-            string qStr = "Select Count(*) from CompanyUsers_Table Where Username='" + uName + "' And UserPassword='" + uPwd + "' And ActiveStatus=1";
-            SqlCommand cmd = new SqlCommand(qStr, con);
 
-            SqlDataAdapter da = new SqlDataAdapter();
-            da.SelectCommand = cmd;
-            da.Fill(ds);
-
-            if (Convert.ToInt32(ds.Tables[0].Rows[0][0].ToString()) > 0)
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            try
             {
-                return true;
+                con.Open();
+                cmd.CommandText = "Select UserName,CustomerName,isRetailer from CompanyUsers_Table Where Username='" + uName + "' And UserPassword='" + uPwd + "' And ActiveStatus=1";
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = cmd;
+                dt.TableName = "Users";
+                da.Fill(dt);
+                con.Close();
+
+                var responseObject = new
+                {
+                    Users = dt
+                };
+                if (dt.Rows.Count > 0)
+                {
+                    var response = Request.CreateResponse(HttpStatusCode.OK, responseObject, MediaTypeHeaderValue.Parse("application/json"));
+                    return response;
+                }
+                else
+                {
+                    var response = Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid User Credentails");
+                    return response;
+                }
+
+
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                HttpResponseMessage responseMessage = Request.CreateErrorResponse(HttpStatusCode.NotFound, "Unable to Login");
+                return responseMessage;
             }
+
+            //if (Convert.ToInt32(ds.Tables[0].Rows[0][0].ToString()) > 0)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
         // POST api/values
@@ -51,7 +80,7 @@ namespace Wings21D.Controllers
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-            
+
             if (!String.IsNullOrEmpty(dbName))
             {
                 cmd.CommandText = "Select count(*) from CompanyUsers_Table";
@@ -62,7 +91,7 @@ namespace Wings21D.Controllers
                 usersList.Fill(fetchedUsers);
                 con.Close();
 
-                if(Convert.ToInt32(fetchedUsers.Rows[0][0].ToString()) > 0)
+                if (Convert.ToInt32(fetchedUsers.Rows[0][0].ToString()) > 0)
                 {
                     con.Open();
                     cmd.CommandText = "Delete from CompanyUsers_Table";
@@ -75,7 +104,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     foreach (Users users in usr)
                     {
-                        cmd.CommandText = "Insert Into CompanyUsers_Table Values('" + users.userName + "','" + users.userPassword + "'," + users.userStatus +  
+                        cmd.CommandText = "Insert Into CompanyUsers_Table Values('" + users.userName + "','" + users.userPassword + "'," + users.userStatus +
                                           "," + users.isRetailer + ",'" + users.customerName + "')";
                         cmd.ExecuteNonQuery();
                     }

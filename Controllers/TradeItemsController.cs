@@ -15,14 +15,17 @@ namespace Wings21D.Controllers
     {
         // GET api/values
         //public IEnumerable<string> Get()
-        public HttpResponseMessage Get(string dbName, string pc, string zerostock,string categoryName)
+        public HttpResponseMessage Get(string dbName, string pc, string zerostock,string categoryNames)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable Items = new DataTable();
-
+            if (categoryNames != null)
+            {
+                categoryNames = categoryNames.Remove(categoryNames.Length - 1, 1);
+            }
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(pc))
             {
                 try
@@ -36,7 +39,7 @@ namespace Wings21D.Controllers
                         {
                             if (zerostock == "true")
                             {
-                                    if (categoryName==null||categoryName.Equals(string.Empty)||categoryName.ToUpper()=="All Categories")
+                                    if (categoryNames==null||categoryNames.Equals(string.Empty)||categoryNames.Contains("All Categories"))
                                     {
                                         cmd.CommandText = "With ProductsList As ( " +
                                                           "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -59,7 +62,7 @@ namespace Wings21D.Controllers
                                                           "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
                                                           "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                                           ") Select * from ProductsList left join Trade_ProductCategories_Table on ProductsList.ItemName=Trade_ProductCategories_Table.ProductName" +
-                                                          " where Trade_ProductCategories_Table.CategoryName='" + categoryName + "' and ProductsList.ProfitCenterName='" + pc +
+                                                          " where Trade_ProductCategories_Table.CategoryName in (" + categoryNames + ") and ProductsList.ProfitCenterName='" + pc +
                                                           "' Order By ProductsList.ItemName";
 
                                      }
@@ -67,7 +70,7 @@ namespace Wings21D.Controllers
                             }
                             else
                             {
-                                    if (categoryName == null || categoryName.Equals(string.Empty) || categoryName.ToUpper() == "All Categories")
+                                    if (categoryNames==null|| categoryNames.Equals(string.Empty) || categoryNames.Contains("All Categories"))
                                     {
                                           cmd.CommandText = "With ProductsList As ( " +
                                                   "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -90,7 +93,7 @@ namespace Wings21D.Controllers
                                                   "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
                                                   "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                                   ") Select * from ProductsList left join Trade_ProductCategories_Table on ProductsList.ItemName=Trade_ProductCategories_Table.ProductName" +
-                                                  " where Trade_ProductCategories_Table.CategoryName='"+categoryName+ "' and ProductsList.BalanceQty>0 And ProductsList.ProfitCenterName='" + pc +
+                                                  " where Trade_ProductCategories_Table.CategoryName in ("+categoryNames+ ") and ProductsList.BalanceQty>0 And ProductsList.ProfitCenterName='" + pc +
                                                   "' Order By ProductsList.ItemName";
 
                                     }
@@ -102,7 +105,7 @@ namespace Wings21D.Controllers
                             if (zerostock == "true")
                             {
 
-                                    if (categoryName == null || categoryName.Equals(string.Empty) || categoryName.ToUpper() == "All Categories")
+                                    if (categoryNames==null|| categoryNames.Equals(string.Empty) || categoryNames.Contains("All Categories"))
                                     {
                                       cmd.CommandText = "With ProductsList As ( " +
                                        "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -124,13 +127,13 @@ namespace Wings21D.Controllers
                                            "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
                                            "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                            ") Select * from ProductsList left join Trade_ProductCategories_Table on ProductsList.ItemName=Trade_ProductCategories_Table.ProductName" +
-                                           " where Trade_ProductCategories_Table.CategoryName='"+categoryName+ "' Order By ProductsList.ItemName";
+                                           " where Trade_ProductCategories_Table.CategoryName in ("+categoryNames+ ") Order By ProductsList.ItemName";
                                    }
                                 
                             }
                             else
                             {
-                                    if (categoryName == null || categoryName.Equals(string.Empty) || categoryName.ToUpper() == "All Categories")
+                                    if (categoryNames==null|| categoryNames.Equals(string.Empty) || categoryNames.Contains("All Categories"))
                                     {
                                         cmd.CommandText = "With ProductsList As ( " +
                                                   "Select a.ItemName, a.ProductName, a.HSNSAC,  a.ProfitCenterName, a.GSTRate," +
@@ -152,7 +155,7 @@ namespace Wings21D.Controllers
                                                   "Left Join Trade_ItemBalance_Table b On a.ItemName=b.ItemName " +
                                                   "Group by a.ItemName, a.ProductName, a.ProfitCenterName, a.HSNSAC, a.GSTRate, b.ItemName " +
                                                   ") Select * from ProductsList left join Trade_ProductCategories_Table on ProductsList.ItemName=Trade_ProductCategories_Table.ProductName " +
-                                                  "where Trade_ProductCategories_Table.CategoryName='"+categoryName+ "' and ProductsList.BalanceQty>0 Order By ProductsList.ItemName";
+                                                  "where Trade_ProductCategories_Table.CategoryName in ("+categoryNames+ ") and ProductsList.BalanceQty>0 Order By ProductsList.ItemName";
 
                                     }
                                 

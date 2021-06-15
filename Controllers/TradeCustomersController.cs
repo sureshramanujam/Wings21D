@@ -76,6 +76,65 @@ namespace Wings21D.Controllers
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
         }
+        public HttpResponseMessage Get(string dbName, string beatName,string customerName)
+        {
+            if (!String.IsNullOrEmpty(dbName))
+            {
+                SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+                DataSet ds = new DataSet();
+                List<string> mn = new List<string>();
+                SqlDataAdapter da = new SqlDataAdapter();
+                DataTable Customers = new DataTable();
+                SqlCommand cmd = new SqlCommand();
+
+                try
+                {
+                    cmd.Connection = con;
+                    con.Open();
+
+                    if (!String.IsNullOrEmpty(beatName)&&!String.IsNullOrEmpty(customerName))
+                    {
+                        cmd.CommandText = "Select DISTINCT a.CustomerName, a.BeatName, ISNULL(a.CustomerCity,'Not Set') CustomerCity, " +
+                                          "ISNULL(a.GSTNumber,'Not Set') GSTNumber, ISNULL(Sum(b.PendingValue),0) TotalDue " +
+                                          "From Trade_Customers_Table a LEFT Join Trade_CustomerPendingBills_Table b " +
+                                          "On a.CustomerName = b.CustomerName Where a.BeatName='" + beatName.Trim() + "'" + 
+                                          "and a.CustomerName='"+customerName+"' Group by a. CustomerName, b.CustomerName, a.BeatName, a.GSTNumber, a.CustomerCity " +
+                                          "Order by a.CustomerName, a.BeatName";
+                    }
+                    //else
+                    //{
+                    //    cmd.CommandText = "Select DISTINCT a.CustomerName, a.BeatName, ISNULL(a.CustomerCity,'Not Set') CustomerCity, " +
+                    //                      "ISNULL(a.GSTNumber,'Not Set') GSTNumber, ISNULL(Sum(b.PendingValue),0) TotalDue " +
+                    //                      "From Trade_Customers_Table a LEFT Join Trade_CustomerPendingBills_Table b " +
+                    //                      "On a.CustomerName = b.CustomerName " +
+                    //                      "Group by a. CustomerName, b.CustomerName, a.BeatName, a.GSTNumber, a.CustomerCity " +
+                    //                      "Order by a.CustomerName, a.BeatName";
+                    //}
+                    da.SelectCommand = cmd;
+                    Customers.TableName = "Customers";
+                    da.Fill(Customers);
+                    con.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                }
+
+                var returnResponseObject = new
+                {
+                    Customers = Customers
+                };
+
+                var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+
+                return response;
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+        }
 
         // GET api/values/5
 

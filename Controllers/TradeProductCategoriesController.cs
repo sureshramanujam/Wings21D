@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using Wings21D.Models;
 using System.Linq;
+using Wings21D.Utils;
 
 namespace Wings21D.Controllers
 {
@@ -27,6 +28,7 @@ namespace Wings21D.Controllers
             {
                 try
                 {
+                    //LogsGenerator.LogMessage("Begin", dbName);
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
@@ -36,9 +38,11 @@ namespace Wings21D.Controllers
                     PCategories.TableName = "ProductCategories";
                     da.Fill(PCategories);
                     con.Close();
+                    //LogsGenerator.LogMessage("End", dbName);
                 }
                 catch (Exception ex)
                 {
+                    //LogsGenerator.LogError(ex.ToString(), dbName);
                     return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
 
@@ -86,6 +90,7 @@ namespace Wings21D.Controllers
             {
                 try
                 {
+                    //LogsGenerator.LogMessage("Begin", dbName);
                     DataTable dataTable = new DataTable();
                     SqlDataAdapter sqlDataAdapter = new SqlDataAdapter();
                     con.Open();
@@ -101,16 +106,19 @@ namespace Wings21D.Controllers
                         cmd.ExecuteNonQuery();
                         con.Close();
                     }
+                    //LogsGenerator.LogMessage("End", dbName);
 
                 }
                 catch(Exception ex)
                 {
+                    //LogsGenerator.LogError(ex.ToString(), dbName);
                     return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
                 if (uploadEverything)
                 {
                     try
                     {
+                        //LogsGenerator.LogMessage("Begin", dbName);
                         con.Open();
                         cmd.CommandText = "Delete from Trade_ProductCategories_Table";
                         cmd.ExecuteNonQuery();
@@ -118,15 +126,28 @@ namespace Wings21D.Controllers
 
                         con.Open();
                         foreach (TradeProductCategories prc in productCategories)
-                        {
-                            cmd.CommandText = "Insert Into Trade_ProductCategories_Table Values('" + prc.ProductName + "','"+prc.CategoryName+"')";
-                            cmd.ExecuteNonQuery();
+                        {   
+                          //  LogsGenerator.LogMessage(prc.ProductName + ":" + prc.CategoryName, dbName);
+                            prc.ProductName = prc.ProductName.Replace("'", "''");
+                            prc.CategoryName = prc.CategoryName.Replace("'", "''");
+                            try
+                            {
+                                cmd.CommandText = "Insert Into Trade_ProductCategories_Table Values('" + prc.ProductName + "','" + prc.CategoryName + "')";
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (SqlException se)
+                            {
+
+                            }
+
                         }
                         con.Close();
+                       // LogsGenerator.LogMessage("End", dbName);
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                     catch (Exception e)
                     {
+                       // LogsGenerator.LogError(e.ToString(), dbName);
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
@@ -134,16 +155,21 @@ namespace Wings21D.Controllers
                 {
                     try
                     {
+                        //LogsGenerator.LogMessage("Begin", dbName);
                         con.Open();
                         foreach (TradeProductCategories prc in productCategories)
                         {
+                            prc.ProductName = prc.ProductName.Replace("'", "''");
+                            prc.CategoryName = prc.CategoryName.Replace("'", "''");
                             cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + prc.ProductName + "','"+prc.CategoryName+"')";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();
+                        //LogsGenerator.LogMessage("End", dbName);
                     }
                     catch (Exception ex)
                     {
+                        //LogsGenerator.LogError(ex.ToString(), dbName);
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                     return new HttpResponseMessage(HttpStatusCode.Created);

@@ -176,6 +176,7 @@
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\DivisionsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\TradeCustomerBeatController.cs" />
     <Compile Include="Controllers\TradeCustomerLedgerController.cs" />
     <Compile Include="Controllers\CompanyDetailsController.cs" />
     <Compile Include="Controllers\BooksCustomersController.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Models\TradeBeatsModel.cs" />
     <Compile Include="Models\CollectionsEntryModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\LogsGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -331,6 +333,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Logs\" />
     <Folder Include="Views\BooksSalesInvoicesReport\" />
   </ItemGroup>
   <ItemGroup>

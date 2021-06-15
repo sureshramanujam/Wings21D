@@ -36,7 +36,7 @@ namespace Wings21D.Controllers
 
                     cmd.CommandText = "SELECT " +
                                       "(SELECT count(*) From Collections_Table where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CollectionCount, " +
-                                      "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where Username=' And " + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CollectionAmount, " +
+                                      "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CollectionAmount, " +
                                       "(SELECT count(*) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CashTransactions, " +
                                       "(SELECT sum(amount) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CashAmount, " +
                                       "(SELECT count(*) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS ChequeTransactions, " +
