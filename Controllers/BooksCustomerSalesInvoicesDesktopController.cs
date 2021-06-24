@@ -55,7 +55,7 @@ namespace Wings21D.Controllers
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
+
             }
         }
 
@@ -71,10 +71,17 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            String uploadAll = String.Empty;
+            bool uploadAllData = false;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
+            }
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll == "true" ? true : false;
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -96,82 +103,56 @@ namespace Wings21D.Controllers
                 con.Close();
 
                 string invoiceNumbers = String.Empty;
-
-                if (dt.Rows.Count > 0)
+                if (dt.Rows.Count == 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersSalesInvoices_Desktop_Table";
+                    cmd.CommandText = "Create Table Books_CustomersSalesInvoices_Desktop_Table (" +
+                                          "TransactionType nvarchar(60) null," +
+                                          "CustomerName nvarchar(265) null," +
+                                          "InvoiceNumber nchar(100) null," +
+                                          "InvoiceDate date null," +
+                                          "InvoiceType nchar(20) null," +
+                                          "InvoiceSubType nchar(20) null," +
+                                          "EWayBillNumber nvarchar(30) null," +
+                                          "ProductName nvarchar(265) null," +
+                                          "InvoiceQty decimal(18,2) null," +
+                                          "GSTRate nvarchar(30) null," +
+                                          "DiscountAmount decimal(18,2) null," +
+                                          "GSTAmount decimal(18,2) null," +
+                                          "CessAmount decimal(18,2) null," +
+                                          "LineAmount decimal(18,2) null," +
+                                          "Remarks nvarchar(265) null," +
+                                          "OrderNumber nchar(50) null," +
+                                          "DeliveryNumber nchar(50) null," +
+                                          "Username nvarchar(265) null)";
                     cmd.ExecuteNonQuery();
                     con.Close();
-                    con.Open();
-                    
-                    foreach (BooksCustomersSalesInvoicesDesktop a in CSID)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
-                                          a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
-                                          a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
-                                          a.GSTRate + "'," +a.DiscountAmount +","+ a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
-                                          a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
-
-                        cmd.ExecuteNonQuery();
-                        invoiceNumbers += a.InvoiceNumber + "$";
-                        invoiceNumbers = invoiceNumbers.Replace('\\', ' ');
-                    }
-                    con.Close();
                 }
-                else
                 {
-                    try
+                    if (uploadAllData)
                     {
                         con.Open();
-                        cmd.CommandText = "Create Table Books_CustomersSalesInvoices_Desktop_Table (" +
-                                              "TransactionType nvarchar(60) null," +
-                                              "CustomerName nvarchar(265) null," +
-                                              "InvoiceNumber nchar(100) null," +
-                                              "InvoiceDate date null," +
-                                              "InvoiceType nchar(20) null," +
-                                              "InvoiceSubType nchar(20) null," +
-                                              "EWayBillNumber nvarchar(30) null," +
-                                              "ProductName nvarchar(265) null," +
-                                              "InvoiceQty decimal(18,2) null," +
-                                              "GSTRate nvarchar(30) null," +
-                                              "DiscountAmount decimal(18,2) null," +
-                                              "GSTAmount decimal(18,2) null," +
-                                              "CessAmount decimal(18,2) null," +
-                                              "LineAmount decimal(18,2) null," +                                              
-                                              "Remarks nvarchar(265) null," +
-                                              "OrderNumber nchar(50) null," +
-                                              "DeliveryNumber nchar(50) null," +
-                                              "Username nvarchar(265) null)";
+                        cmd.CommandText = "Delete From Books_CustomersSalesInvoices_Desktop_Table";
                         cmd.ExecuteNonQuery();
-
-                        foreach (BooksCustomersSalesInvoicesDesktop a in CSID)
-                        {
-                            try
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
-                                          a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
-                                          a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
-                                          a.GSTRate + "'," + a.DiscountAmount + "," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
-                                          a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
-
-                                cmd.ExecuteNonQuery();
-                                invoiceNumbers += a.InvoiceNumber + "$";
-                                invoiceNumbers = invoiceNumbers.Replace('\\', ' ');
-                            }
-                            catch
-                            {
-
-                            }
-                        }
                         con.Close();
                     }
-                    catch (Exception ex)
-                    {  
-                        return "Unable to insert data.";
-                    }
-                    return "Error";
                 }
+
+                con.Open();
+
+                foreach (BooksCustomersSalesInvoicesDesktop a in CSID)
+                {
+                    cmd.CommandText = "Insert Into Books_CustomersSalesInvoices_Desktop_Table Values('" + a.TransactionType + "','" + a.CustomerName + "','" +
+                                        a.InvoiceNumber + "','" + String.Format("{0:yyyy-MM-dd}", a.InvoiceDate) + "','" + a.InvoiceType + "','" +
+                                        a.InvoiceSubType + "','" + a.EWayBillNumber + "','" + a.ProductName + "'," + a.InvoiceQuantity + ",'" +
+                                        a.GSTRate + "'," + a.DiscountAmount + "," + a.GSTAmount + "," + a.CessAmount + "," + a.LineAmount + ",'" +
+                                        a.Remarks + "','" + a.OrderNumber + "','" + a.DeliveryNumber + "','" + a.Username + "')";
+
+                    cmd.ExecuteNonQuery();
+                    invoiceNumbers += a.InvoiceNumber + "$";
+                    invoiceNumbers = invoiceNumbers.Replace('\\', ' ');
+                }
+                con.Close();
                 return invoiceNumbers;
             }
             else
@@ -181,3 +162,6 @@ namespace Wings21D.Controllers
         }
     }
 }
+        
+    
+
