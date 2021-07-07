@@ -13,7 +13,7 @@ namespace Wings21D.Controllers
     {
         // GET api/values
         //public IEnumerable<string> Get()
-        public HttpResponseMessage Get(string dbName, string userName, string asAtDate)
+        public HttpResponseMessage Get(string dbName, string userName, string asAtDate,string salesExecutive)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -22,6 +22,11 @@ namespace Wings21D.Controllers
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable Dashboard = new DataTable();
             DataTable UserIDTable = new DataTable();
+            string asOnDate = DateTime.Parse(asAtDate).ToString("yyyy-MM-dd");
+            if (!string.IsNullOrEmpty(salesExecutive))
+            {
+                salesExecutive = salesExecutive.Remove(salesExecutive.Length - 1, 1);
+            }
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(userName))
             {
@@ -34,14 +39,43 @@ namespace Wings21D.Controllers
                     da.SelectCommand = cmd;
                     da.Fill(UserIDTable);
 
-                    cmd.CommandText = "SELECT " +
-                                      "(SELECT count(*) From Collections_Table where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CollectionCount, " +
-                                      "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CollectionAmount, " +
-                                      "(SELECT count(*) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CashTransactions, " +
-                                      "(SELECT sum(amount) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS CashAmount, " +
-                                      "(SELECT count(*) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS ChequeTransactions, " +
-                                      "(SELECT sum(amount) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And Convert(varchar,TransactionDate,105) <= '" + asAtDate + "') AS ChequeAmount";
+                    if (userName.ToUpper()== "SUPERVISOR")
+                    {
+                        if (string.IsNullOrEmpty(salesExecutive) || salesExecutive.ToUpper().Contains("SUPERVISOR"))
+                        {
+                            cmd.CommandText = "SELECT " +
+                                       "(SELECT count(*) From Collections_Table where TransactionDate <= '" + asOnDate + "') AS CollectionCount, " +
+                                       "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where TransactionDate <= '" + asOnDate + "') AS CollectionAmount, " +
+                                       "(SELECT count(*) From CashCollections_Table Where TransactionDate <= '" + asOnDate + "') AS CashTransactions, " +
+                                       "(SELECT sum(amount) From CashCollections_Table Where TransactionDate <= '" + asOnDate + "') AS CashAmount, " +
+                                       "(SELECT count(*) From ChequeCollections_Table Where TransactionDate <= '" + asOnDate + "') AS ChequeTransactions, " +
+                                       "(SELECT sum(amount) From ChequeCollections_Table Where TransactionDate <= '" + asOnDate + "') AS ChequeAmount";
 
+
+                        }
+                        else
+                        {
+                            cmd.CommandText = "SELECT " +
+                                       "(SELECT count(*) From Collections_Table where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS CollectionCount, " +
+                                       "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS CollectionAmount, " +
+                                       "(SELECT count(*) From CashCollections_Table Where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS CashTransactions, " +
+                                       "(SELECT sum(amount) From CashCollections_Table Where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS CashAmount, " +
+                                       "(SELECT count(*) From ChequeCollections_Table Where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS ChequeTransactions, " +
+                                       "(SELECT sum(amount) From ChequeCollections_Table Where Username in (" + salesExecutive + ") And TransactionDate <= '" + asOnDate + "') AS ChequeAmount";
+
+                        }
+                    }
+                    else
+                    {
+                        cmd.CommandText = "SELECT " +
+                                      "(SELECT count(*) From Collections_Table where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asOnDate + "') AS CollectionCount, " +
+                                      "(SELECT sum(cashamount)+sum(chequeamount) From Collections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "'And TransactionDate <= '" + asOnDate + "') AS CollectionAmount, " +
+                                      "(SELECT count(*) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asOnDate + "') AS CashTransactions, " +
+                                      "(SELECT sum(amount) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asOnDate + "') AS CashAmount, " +
+                                      "(SELECT count(*) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asOnDate + "') AS ChequeTransactions, " +
+                                      "(SELECT sum(amount) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asOnDate + "') AS ChequeAmount";
+
+                    }
                     da.SelectCommand = cmd;
                     Dashboard.TableName = "Dashboard";
                     da.Fill(Dashboard);
