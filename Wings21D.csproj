@@ -214,8 +214,10 @@
     <Compile Include="Controllers\TradeGetSalesOrderLastNumberController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
     <Compile Include="Controllers\TradeProductCategoriesController.cs" />
+    <Compile Include="Controllers\TradeSalesExecutiveController.cs" />
     <Compile Include="Controllers\TradeSalesOrdersReportController.cs" />
     <Compile Include="Controllers\TradeSalesOrderController.cs" />
+    <Compile Include="Controllers\TradeSalesOrdersReportFilterationController.cs" />
     <Compile Include="Controllers\UpdateTransactionFlagController.cs" />
     <Compile Include="Controllers\TradeCollectionsController.cs" />
     <Compile Include="Controllers\CreateDatabaseController.cs" />

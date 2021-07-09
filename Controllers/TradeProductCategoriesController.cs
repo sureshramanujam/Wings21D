@@ -127,7 +127,7 @@ namespace Wings21D.Controllers
                         con.Open();
                         foreach (TradeProductCategories prc in productCategories)
                         {   
-                          //  LogsGenerator.LogMessage(prc.ProductName + ":" + prc.CategoryName, dbName);
+                            //LogsGenerator.LogMessage("Begin", dbName);
                             prc.ProductName = prc.ProductName.Replace("'", "''");
                             prc.CategoryName = prc.CategoryName.Replace("'", "''");
                             try
@@ -137,17 +137,17 @@ namespace Wings21D.Controllers
                             }
                             catch (SqlException se)
                             {
-
+                                //LogsGenerator.LogMessage(se.ToString(), dbName);
                             }
-
+                            //LogsGenerator.LogMessage("End", dbName);
                         }
                         con.Close();
-                       // LogsGenerator.LogMessage("End", dbName);
+                        //LogsGenerator.LogMessage("End", dbName);
                         return new HttpResponseMessage(HttpStatusCode.Created);
                     }
                     catch (Exception e)
                     {
-                       // LogsGenerator.LogError(e.ToString(), dbName);
+                        //LogsGenerator.LogError(e.ToString(), dbName);
                         return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                     }
                 }
@@ -161,7 +161,7 @@ namespace Wings21D.Controllers
                         {
                             prc.ProductName = prc.ProductName.Replace("'", "''");
                             prc.CategoryName = prc.CategoryName.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Trade_Beats_Table Values('" + prc.ProductName + "','"+prc.CategoryName+"')";
+                            cmd.CommandText = "Insert Into Trade_ProductCategories_Table Values('" + prc.ProductName + "','" + prc.CategoryName + "')";
                             cmd.ExecuteNonQuery();
                         }
                         con.Close();

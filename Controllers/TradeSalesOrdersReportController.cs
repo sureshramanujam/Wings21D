@@ -21,7 +21,8 @@ namespace Wings21D.Controllers
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesOrders = new DataTable();
-
+            string fromDateString = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+            string toDateString = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
             if (!String.IsNullOrEmpty(dbName))
             {
                 try
@@ -33,18 +34,18 @@ namespace Wings21D.Controllers
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "With SalesOrdersList As( " +
-                                        "Select a.DocumentNo, Convert(varchar,TransactionDate,105) As 'OrderDate', " +
+                                        "Select a.DocumentNo,TransactionDate As 'OrderDate', " +
                                         "a.CustomerName, a.ItemName, b.RatePerPiece, b.RatePerPack, a.QuantityInPieces, a.QuantityInPacks, " +
                                         "(a.QuantityInPieces*b.RatePerPiece) As 'AmtPcs', (a.QuantityInPacks*b.RatePerPack) As 'AmtPacks', " +
                                         "TransactionRemarks, DownloadedFlag, a.Username " +
                                         "From Trade_SalesOrder_Table a " +
                                         "Left Join Trade_Items_Table b on a.ItemName=b.ItemName " +
                                       ") " +
-                                      "Select DocumentNo, OrderDate, CustomerName, Sum(QuantityInPieces+QuantityInPacks) As 'TotalQty', " +
+                                      "Select DocumentNo, Convert(varchar,OrderDate,105) OrderDate, CustomerName, Sum(QuantityInPieces+QuantityInPacks) As 'TotalQty', " +
                                       "Sum(AmtPcs+AmtPacks) As 'TotalAmount' ," +
                                       "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +
                                       "From SalesOrdersList " +
-                                      "Where OrderDate Between '" + fromDate + "' And '" + toDate + "' And " +
+                                      "Where OrderDate Between '" + fromDateString + "' And '" + toDateString + "' And " +
                                       "Username='" + userName + "' " +
                                       "Group by DocumentNo, OrderDate, CustomerName, TransactionRemarks, Username " +
                                       "Order By OrderDate, DocumentNo";
