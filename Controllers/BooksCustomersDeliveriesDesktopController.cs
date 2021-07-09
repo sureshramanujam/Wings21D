@@ -21,7 +21,7 @@ namespace Wings21D.Controllers
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable DesktopDeliveries = new DataTable();            
+            DataTable DesktopDeliveries = new DataTable();
 
             if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
             {
@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersDeliveries_Desktop_Table Where CustomerName='" + custName + "' " + 
+                    cmd.CommandText = "Select * from Books_CustomersDeliveries_Desktop_Table Where CustomerName='" + custName + "' " +
                                       "Order by OrderDate, OrderNumer";
                     da.SelectCommand = cmd;
                     DesktopDeliveries.TableName = "DesktopDeliveries";
@@ -55,7 +55,7 @@ namespace Wings21D.Controllers
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
+
             }
         }
 
@@ -71,17 +71,24 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
-            string deliveryNumbers = String.Empty;
+            //string deliveryNumbers = String.Empty;
+            String uploadAll = String.Empty;
+            bool uploadAllData = false;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll == "true" ? true : false;
+            }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-            
+
             if (!String.IsNullOrEmpty(dbName))
             {
                 con.Open();
@@ -94,77 +101,69 @@ namespace Wings21D.Controllers
                 da.Fill(dt);
                 con.Close();
 
-                if (dt.Rows.Count > 0)
+                string deliveryNumbers = String.Empty;
+                if (dt.Rows.Count == 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersDeliveries_Desktop_Table";
+
+                    cmd.CommandText = "Create Table Books_CustomersDeliveries_Desktop_Table (" +
+                                      "OrderNumber nchar(100) null," +
+                                      "DCNumber nchar(100) null," +
+                                      "DCDate date null," +
+                                      "CustomerName nvarchar(265) null," +
+                                      "ProductName nvarchar(265) null," +
+                                      "Quantity decimal(18,2) null," +
+                                      "LineAmount decimal(18,2) null," +
+                                      "Username nvarchar(265) null)";
                     cmd.ExecuteNonQuery();
                     con.Close();
-
-                    con.Open();
-
-                    foreach(BooksCustomersDeliveriesDesktop a in BCD)
+                }
+                {
+                    if (uploadAllData)
                     {
-                        cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
-                                                 String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
-                                                 a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
+
+                        con.Open();
+                        cmd.CommandText = "Delete From Books_CustomersDeliveries_Desktop_Table";
                         cmd.ExecuteNonQuery();
-
-                        deliveryNumbers += a.DCNumber + "$";
-                        deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
+                        con.Close();
                     }
-                    con.Close();
                 }
-                else 
-                {   
-                        try
-                        {
-                            con.Open();
-                           
-                            cmd.CommandText = "Create Table Books_CustomersDeliveries_Desktop_Table (" +
-                                              "OrderNumber nchar(100) null," +
-                                              "DCNumber nchar(100) null," +
-                                              "DCDate date null," +
-                                              "CustomerName nvarchar(265) null," +
-                                              "ProductName nvarchar(265) null," +
-                                              "Quantity decimal(18,2) null," +
-                                              "LineAmount decimal(18,2) null," +
-                                              "Username nvarchar(265) null)";
-                            cmd.ExecuteNonQuery();
 
-                            foreach (BooksCustomersDeliveriesDesktop a in BCD)
-                            {
-                                cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
-                                                  String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
-                                                  a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
-                                cmd.ExecuteNonQuery();
-                                deliveryNumbers += a.DCNumber + "$";
-                                deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
-                        }
-                            con.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            return "Unable to insert data.";
-                        }
-                        return deliveryNumbers;
+                con.Open();
+
+                foreach (BooksCustomersDeliveriesDesktop a in BCD)
+                {
+                    cmd.CommandText = "Insert Into Books_CustomersDeliveries_Desktop_Table Values('" + a.OrderNumber + "','" + a.DCNumber + "','" +
+                                             String.Format("{0:yyyy-MM-dd}", a.DCDate) + "','" + a.CustomerName + "','" +
+                                             a.ProductName + "'," + a.Quantity + "," + a.LineAmount + ",'" + a.Username + "')";
+                    cmd.ExecuteNonQuery();
+
+                    deliveryNumbers += a.DCNumber + "$";
+                    deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
                 }
+                con.Close();
+                return deliveryNumbers;
             }
             else
             {
-                return "Databae Error.";
+                return "Database not found.";
             }
-            return deliveryNumbers;
-        }
-
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
         }
     }
 }
+
+        
+
+        
+
+        // PUT api/<controller>/5
+        //public void Put(int id, [FromBody]string value)
+        //{
+        //}
+
+        // DELETE api/<controller>/5
+       // public void Delete(int id)
+        //{
+        //}
+   // }
+//

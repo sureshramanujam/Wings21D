@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersPayments_Desktop_Table Where CustomerName='" + custName + "' " + 
+                    cmd.CommandText = "Select * from Books_CustomersPayments_Desktop_Table Where CustomerName='" + custName + "' " +
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
                     DesktopPayments.TableName = "Payments";
@@ -55,7 +55,7 @@ namespace Wings21D.Controllers
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
+
             }
         }
 
@@ -71,17 +71,24 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
-            string paymentNumbers = String.Empty;
+            //string paymentNumbers = String.Empty;
+            string uploadAll = String.Empty;
+            bool uploadAllData = false;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll == "true" ? true : false;
+            }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-            
+
             if (!String.IsNullOrEmpty(dbName))
             {
                 con.Open();
@@ -93,69 +100,56 @@ namespace Wings21D.Controllers
                 da.Fill(dt);
                 con.Close();
 
-                if (dt.Rows.Count > 0)
+                string paymentNumbers = String.Empty;
+                if (dt.Rows.Count == 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersPayments_Desktop_Table";
+                    cmd.CommandText = "Create Table Books_CustomersPayments_Desktop_Table (" +
+                                           "CustomerName nvarchar(265) null," +
+                                           "VoucherNumber nchar(100) null," +
+                                           "VoucherDate date null," +
+                                           "PaymentMode nchar(25) null," +
+                                           "ChequeNumber nchar(25) null," +
+                                           "AgainstInvoiueNumber nchar(100) null," +
+                                           "NetAmount decimal(18,2) null," +
+                                           "Username nvarchar(265) null)";
                     cmd.ExecuteNonQuery();
                     con.Close();
-                    con.Open();
-                    foreach (BooksCustomersPayments a in CSP)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
-                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
-                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
-
-                        cmd.ExecuteNonQuery();
-                        paymentNumbers += a.VoucherNumber + "$";
-                        paymentNumbers = paymentNumbers.Replace('\\', ' ');
-                    }
-                    con.Close();
                 }
-                else 
                 {
-                    try
+                    if (uploadAllData)
                     {
                         con.Open();
-                        cmd.CommandText = "Create Table Books_CustomersPayments_Desktop_Table (" +
-                                               "CustomerName nvarchar(265) null," +
-                                               "VoucherNumber nchar(100) null," +
-                                               "VoucherDate date null," +
-                                               "PaymentMode nchar(25) null," +
-                                               "ChequeNumber nchar(25) null," +
-                                               "AgainstInvoiueNumber nchar(100) null," +
-                                               "NetAmount decimal(18,2) null," +
-                                               "Username nvarchar(265) null)";
+                        cmd.CommandText = "Delete From Books_CustomersPayments_Desktop_Table";
                         cmd.ExecuteNonQuery();
-                        foreach (BooksCustomersPayments a in CSP)
-                        {
-                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
-                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
-                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
-
-                            cmd.ExecuteNonQuery();
-                            paymentNumbers += a.VoucherNumber + "$";
-                            paymentNumbers = paymentNumbers.Replace('\\', ' ');
-
-                        }
                         con.Close();
                     }
-                    catch (Exception ex)
-                    {
-                        return "Unable to insert data.";
-                    }
-                    return paymentNumbers;
                 }
+
+                con.Open();
+                foreach (BooksCustomersPayments a in CSP)
+                {
+                    cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                  "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                  a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
+
+                    cmd.ExecuteNonQuery();
+                    paymentNumbers += a.VoucherNumber + "$";
+                    paymentNumbers = paymentNumbers.Replace('\\', ' ');
+
+                }
+                con.Close();
                 return paymentNumbers;
             }
             else
             {
-                return "Database error.";
+                return "Database not found.";
             }
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
+
+        //PUT api/<controller>/5
+        public void Put(int id, [FromBody] string value)
         {
         }
 

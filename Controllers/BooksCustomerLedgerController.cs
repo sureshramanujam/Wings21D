@@ -35,7 +35,7 @@ namespace Wings21D.Controllers
                     DateTime dt = DateTime.Parse(fromDate);
                     DateTime dt1 = DateTime.Parse(toDate);
 
-                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' And Convert(varchar,VoucherDate,23) Between '" +
+                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' And VoucherDate Between '" +
                                       String.Format("{0:yyyy-MM-dd}", dt) + "' And '" + String.Format("{0:yyyy-MM-dd}", dt1) + "' " + 
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
