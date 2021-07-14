@@ -23,9 +23,9 @@ namespace Wings21D.Controllers
             String transactionType = String.Empty;
 
             if (headers.Contains("dbname"))
-                dbName = headers.GetValues("dbname").First();                
+                dbName = headers.GetValues("dbname").First();
 
-            if(headers.Contains("transactiontype"))
+            if (headers.Contains("transactiontype"))
                 transactionType = headers.GetValues("transactiontype").First();
 
             if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(transactionType))
@@ -41,55 +41,45 @@ namespace Wings21D.Controllers
                 try
                 {
                     con.Open();
-
-                    switch (transactionType)
+                    if (transactionType == "salesorder")
                     {
-                        case "cbcollection":
-                            foreach (DocumentNumbers vno in voucherNumbers)
-                            {
-                                cmd.CommandText = "Update Collections_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                            break;
-                        case "cashcollection":
-                            foreach (DocumentNumbers vno in voucherNumbers)
-                            {
-                                cmd.CommandText = "Update CashCollections_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                            break;
-                        case "chequecollection":
-                            foreach (DocumentNumbers vno in voucherNumbers)
-                            {
-                                cmd.CommandText = "Update ChequeCollections_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                            break;
-                        case "salesorder":
-                            foreach (DocumentNumbers vno in voucherNumbers)
-                            {
-                                cmd.CommandText = "Update Trade_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
-                                cmd.ExecuteNonQuery();
-                                cmd.CommandText = "Update Books_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
-                                cmd.ExecuteNonQuery();
-                            }
-                            con.Close();
-                            break;
+                        foreach (DocumentNumbers vno in voucherNumbers)
+                        {
+                            cmd.CommandText = "Update Trade_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
+                            cmd.ExecuteNonQuery();
+                            cmd.CommandText = "Update Books_SalesOrder_Table Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
+                            cmd.ExecuteNonQuery();
+                        }
                     }
+                    else
+                    {
+                        foreach (DocumentNumbers vno in voucherNumbers)
+                        {
+                            String tableName = String.Empty;
+                            switch (transactionType)
+                            {
+                                case "cbcollection": tableName = "Collections_Table"; break;
+                                case "cashcollection": tableName = "CashCollections_Table"; break;
+                                case "chequecollection": tableName = "ChequeCollections_Table"; break;
+                                case "salesinvoice": tableName = "Books_SalesInvoice_Table"; break;
+                            }
+                            cmd.CommandText = "Update " + tableName + " Set DownloadedFlag=1 Where DocumentNo='" + vno.documentNo + "'";
+                            cmd.ExecuteNonQuery();
+
+                        }
+                    }
+                    con.Close();
                 }
                 catch (Exception ex)
-                { 
-                    return new HttpResponseMessage(HttpStatusCode.NotFound); 
+                {
+                    return new HttpResponseMessage(HttpStatusCode.NotFound);
                 }
             }
-            return new HttpResponseMessage(HttpStatusCode.Created);        
+            return new HttpResponseMessage(HttpStatusCode.Created);
         }
 
         // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 

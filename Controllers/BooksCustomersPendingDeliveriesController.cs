@@ -32,7 +32,7 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    cmd.CommandText = "Select * from Books_CustomersPendingDeliveries_Desktop_Table Where CustomerName='" + custName + "' " + 
+                    cmd.CommandText = "Select * from Books_CustomersPendingDeliveries_Desktop_Table Where CustomerName='" + custName + "' " +
                                       "Order by DCNumber";
                     da.SelectCommand = cmd;
                     SalesOrders.TableName = "SalesOrders";
@@ -55,7 +55,7 @@ namespace Wings21D.Controllers
             else
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
+
             }
         }
 
@@ -71,11 +71,18 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
-            string deliveryNumbers = String.Empty;
+            // string deliveryNumbers = String.Empty;
+            String uploadAll = String.Empty;
+            bool uploadAllData = false;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
+            }
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll == "true" ? true : false;
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -93,70 +100,55 @@ namespace Wings21D.Controllers
                 da.Fill(dt);
                 con.Close();
 
-                if (dt.Rows.Count > 0)
+                string deliveryNumbers = String.Empty;
+                if (dt.Rows.Count == 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersPendingDeliveries_Desktop_Table";
+                    cmd.CommandText = "Create Table Books_CustomersPendingDeliveries_Desktop_Table (" +
+                                           "CustomerName nvarchar(265) null," +
+                                           "ProductName nvarchar(265) null," +
+                                           "Batch nvarchar(265) null," +
+                                           "DCNumber nchar(100) null," +
+                                           "InvoiceNumber nchar(100) null," +
+                                           "BilledQty decimal(18,2) null," +
+                                           "BranchName nvarchar(265) null," +
+                                           "LineAmount decimal(18,2) null," +
+                                           "Username nvarchar(265) null)";
                     cmd.ExecuteNonQuery();
-                    con.Close();
-                    con.Open();
-                    foreach (BooksCustomersPendingDeliveries a in BCPD)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.CustomerName + "','" + a.ProductName + "','" +
-                                          a.BatchName + "','" + a.DCNumber + "','" + a.InvoiceNumber + "'," + a.BilledQuantity + ",'" + a.BranchName + "'," + a.LineAmount +
-                                          ",'" + a.Username + "')";
-
-                        cmd.ExecuteNonQuery();
-                        deliveryNumbers += a.DCNumber + "$";
-                        deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
-                    }
-                    con.Close();
                 }
-                else
                 {
-                    try
+                    if (uploadAllData)
                     {
                         con.Open();
-                        cmd.CommandText = "Create Table Books_CustomersPendingDeliveries_Desktop_Table (" +
-                                               "CustomerName nvarchar(265) null," +
-                                               "ProductName nvarchar(265) null," +
-                                               "Batch nvarchar(265) null," +
-                                               "DCNumber nchar(100) null," +
-                                               "InvoiceNumber nchar(100) null," +
-                                               "BilledQty decimal(18,2) null," +
-                                               "BranchName nvarchar(265) null," +
-                                               "LineAmount decimal(18,2) null," +
-                                               "Username nvarchar(265) null)";
+                        cmd.CommandText = "Delete From Books_CustomersPendingDeliveries_Desktop_Table";
                         cmd.ExecuteNonQuery();
-
-                        foreach (BooksCustomersPendingDeliveries a in BCPD)
-                        {
-                            cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.CustomerName + "','" + a.ProductName + "','" +
-                                          a.BatchName + "','" + a.DCNumber + "','" + a.InvoiceNumber + "'," + a.BilledQuantity + ",'" + a.BranchName + "'," + a.LineAmount +
-                                          ",'" + a.Username + "')";
-
-                            cmd.ExecuteNonQuery();
-                            deliveryNumbers += a.DCNumber + "$";
-                            deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
-                        }
                         con.Close();
                     }
-                    catch (Exception ex)
-                    {
-                        return "Unable to insert data.";
-                    }
-                    return deliveryNumbers;
                 }
+                con.Open();
+
+                foreach (BooksCustomersPendingDeliveries a in BCPD)
+                {
+                    cmd.CommandText = "Insert Into Books_CustomersPendingDeliveries_Desktop_Table Values('" + a.CustomerName + "','" + a.ProductName + "','" +
+                                      a.BatchName + "','" + a.DCNumber + "','" + a.InvoiceNumber + "'," + a.BilledQuantity + ",'" + a.BranchName + "'," + a.LineAmount +
+                                      ",'" + a.Username + "')";
+
+                    cmd.ExecuteNonQuery();
+                    deliveryNumbers += a.DCNumber + "$";
+                    deliveryNumbers = deliveryNumbers.Replace('\\', ' ');
+                }
+                con.Close();
                 return deliveryNumbers;
             }
             else
             {
-                return "Database error.";
+                return "Database not found.";
             }
         }
 
+
         // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody] string value)
         {
         }
 

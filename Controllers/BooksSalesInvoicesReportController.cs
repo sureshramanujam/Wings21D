@@ -21,6 +21,8 @@ namespace Wings21D.Controllers
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesInvoice = new DataTable();
+            string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+            string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
             string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
             string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
@@ -36,7 +38,7 @@ namespace Wings21D.Controllers
                     //DateTime asonDate = DateTime.Parse(asAtDate);
 
                     cmd.CommandText = "With SalesOrdersList As( " +
-                                       "Select a.DocumentNo, TransactionDate As 'InvoiceDate', " +
+                                       "Select a.DocumentNo,TransactionDate As 'InvoiceDate', " +
                                        "a.CustomerName, a.ProductName, b.SalesPrice, a.Quantity," +
                                        "(a.Quantity*b.SalesPrice) As 'Amount', " +
                                        "c.CashAmount, c.ChequeAmount, a.InvoiceType, a.CashCreditType ," +
@@ -45,7 +47,7 @@ namespace Wings21D.Controllers
                                        "Left Join Books_Products_Table b on a.ProductName=b.ProductName " +
                                        "Left Join Books_SalesInvoice_Payments_Table c on a.DocumentNo=c.DocumentNo " +
                                      ") " +
-                                     "Select DocumentNo, Convert(varchar,InvoiceDate,105) as OrderDate , CustomerName, Sum(Quantity) As 'TotalQty', " +
+                                     "Select DocumentNo,Convert(varchar,InvoiceDate,105) As OrderDate, CustomerName, Sum(Quantity) As 'TotalQty', " +
                                      "Sum(Amount) As 'TotalAmount' ," +
                                      "CashAmount, ChequeAmount, InvoiceType, CashCreditType," +
                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +

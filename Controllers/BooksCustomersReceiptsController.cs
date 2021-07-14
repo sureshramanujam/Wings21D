@@ -71,11 +71,18 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
-            string receiptNumbers = String.Empty;
+           // string receiptNumbers = String.Empty;
+            String uploadAll = String.Empty;
+            bool uploadAllData = false;
 
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
+            }
+            if (headers.Contains("uploadall"))
+            {
+                uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll == "true" ? true : false;
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
@@ -96,65 +103,53 @@ namespace Wings21D.Controllers
                 da.Fill(dt);
                 con.Close();
 
-                if (dt.Rows.Count > 0)
+                string receiptNumbers = String.Empty;
+                if (dt.Rows.Count == 0)
                 {
                     con.Open();
-                    cmd.CommandText = "Delete From Books_CustomersReceipts_Desktop_Table";
+                    cmd.CommandText = "Create Table Books_CustomersReceipts_Desktop_Table (" +
+                                           "CustomerName nvarchar(265) null," +
+                                           "VoucherNumber nchar(100) null," +
+                                           "VoucherDate date null," +
+                                           "PaymentMode nchar(25) null," +
+                                           "ChequeNumber nchar(25) null," +
+                                           "AgainstInvoiceNumber nchar(100) null," +
+                                           "NetAmount decimal(18,2) null," +
+                                           "Username nvarchar(265) null)";
                     cmd.ExecuteNonQuery();
                     con.Close();
-                    con.Open();
 
-                    foreach (BooksCustomersReceipts a in CSR)
-                    {
-                        cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
-                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
-                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
-
-                        cmd.ExecuteNonQuery();
-                        receiptNumbers += a.VoucherNumber + "$";
-                        receiptNumbers = receiptNumbers.Replace('\\', ' ');
-                    }
-                    con.Close();
                 }
-                else
                 {
-                    try
+                    if (uploadAllData)
                     {
                         con.Open();
-                        cmd.CommandText = "Create Table Books_CustomersReceipts_Desktop_Table (" +
-                                               "CustomerName nvarchar(265) null," +
-                                               "VoucherNumber nchar(100) null," +
-                                               "VoucherDate date null," +
-                                               "PaymentMode nchar(25) null," +
-                                               "ChequeNumber nchar(25) null," +
-                                               "AgainstInvoiceNumber nchar(100) null," +
-                                               "NetAmount decimal(18,2) null," +
-                                               "Username nvarchar(265) null)";
+                        cmd.CommandText = "Delete From Books_CustomersReceipts_Desktop_Table";
                         cmd.ExecuteNonQuery();
-
-                        foreach (BooksCustomersReceipts a in CSR)
-                        {
-                            cmd.CommandText = "Insert Into Books_CustomersPayments_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
-                                          "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
-                                          a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
-
-                            cmd.ExecuteNonQuery();
-                            receiptNumbers += a.VoucherNumber + "$";
-                            receiptNumbers = receiptNumbers.Replace('\\', ' ');
-                        }
                         con.Close();
                     }
-                    catch (Exception ex)
-                    {
-                        return "Unable to insert data.";
-                    }
                 }
+                con.Open();
+
+                foreach (BooksCustomersReceipts a in CSR)
+                {
+                    cmd.CommandText = "Insert Into Books_CustomersReceipts_Desktop_Table Values('" + a.CustomerName + "','" + a.VoucherNumber +
+                                      "','" + String.Format("{0:yyyy-MM-dd}", a.VoucherDate) + "','" + a.PaymentMode + "','" +
+                                      a.ChequeNumber + "','" + a.AgainstInvoiceNumber + "'," + a.NetAmount + ",'" + a.Username + "')";
+
+                    cmd.ExecuteNonQuery();
+                    receiptNumbers += a.VoucherNumber + "$";
+                    receiptNumbers = receiptNumbers.Replace('\\', ' ');
+                }
+                con.Close();
                 return receiptNumbers;
+
             }
             else
             {
-                return "Database Error.";
+                return "Database not found.";
             }
+
         }
 
         // PUT api/<controller>/5
