@@ -24,9 +24,6 @@ namespace Wings21D.Controllers
             string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
             string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-            string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
-            string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
-
             if (!String.IsNullOrEmpty(dbName))
             {
                 try
