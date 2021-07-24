@@ -41,10 +41,8 @@ namespace Wings21D.Controllers
                                       "(SELECT sum(amount) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS CashAmount, " +
                                       "(SELECT count(*) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS ChequeTransactions, " +
                                       "(SELECT sum(amount) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS ChequeAmount," +
-                                      "(SELECT count(*) From Books_CustomersPendingSalesOrder_Desktop_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And OrderDate <= '" + asatdt + "') AS PendingOrders, " +
-                                      "(SELECT sum(LineAmount) From Books_CustomersPendingSalesOrder_Desktop_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And OrderDate <= '" + asatdt + "') AS PendingOrderValue," +
-                                      "(SELECT count(*) From Books_CustomersSalesInvoices_Desktop_Table Where Username = '" + UserIDTable.Rows[0][0].ToString() + "' And InvoiceDate <= '" + asatdt + "') AS SalesInvoiceCount, " +
-                                      "(SELECT sum(LineAmount) From Books_CustomersSalesInvoices_Desktop_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And InvoiceDate <= '" + asatdt + "') AS SalesInvoiceValue ";
+                                      "(Select sum(a.Quantity * b.SalesPrice) from Books_SalesOrder_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='" + UserIDTable.Rows[0][0].ToString() + "' And a.TransactionDate <= '" + asatdt + "') AS PendingOrderValue," +
+                                      "(Select sum(b.CashAmount+b.ChequeAmount) from Books_SalesInvoice_Table a left join Books_SalesInvoice_Payments_Table b on a.DocumentNo=b.DocumentNo Where a.Username='" + UserIDTable.Rows[0][0].ToString() + "' And a.TransactionDate <= '" + asatdt + "') AS SalesInvoiceValue ";
 
                     da.SelectCommand = cmd;
                     Dashboard.TableName = "Dashboard";
