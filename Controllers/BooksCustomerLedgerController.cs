@@ -32,11 +32,14 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
 
-                    DateTime dt = DateTime.Parse(fromDate);
-                    DateTime dt1 = DateTime.Parse(toDate);
+                    //DateTime dt = DateTime.Parse(fromDate);
+                    //DateTime dt1 = DateTime.Parse(toDate);
+                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-                    cmd.CommandText = "Select * from Books_Customer_Ledger_Table Where Account='" + custName + "' And VoucherDate Between '" +
-                                      String.Format("{0:yyyy-MM-dd}", dt) + "' And '" + String.Format("{0:yyyy-MM-dd}", dt1) + "' " + 
+                    cmd.CommandText = "Select TransactionType,VoucherNumber,Convert(varchar,VoucherDate,105) as VoucherDate,Account,ContraAccount,DebitAmount,CreditAmount,BalanceAmount,Remarks" +
+                                      " from Books_Customer_Ledger_Table Where Account='" + custName + "' And VoucherDate Between '" +
+                                      fromDt+"' And '" + toDt + "' " + 
                                       "Order by VoucherDate, VoucherNumber";
                     da.SelectCommand = cmd;
                     CustomerLedger.TableName = "CustomerLedger";

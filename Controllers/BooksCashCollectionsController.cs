@@ -15,7 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string asAtDate)
+        public HttpResponseMessage Get(string dbName, string fromDate,string toDate,string userName)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
@@ -30,13 +30,14 @@ namespace Wings21D.Controllers
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    DateTime asonDate = DateTime.Parse(asAtDate);
+                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
                     
                     cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, " +
                                       "a.Amount, RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
                                       "a.TransactionRemarks, a.Username From CashCollections_Table a, Books_Customers_Table b Where " +
-                                      "a.CustomerName=b.CustomerName and Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() +
-                                      "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                                      "a.CustomerName=b.CustomerName and a.username='"+userName+"' and a.TransactionDate between '" + fromDt +"' and '"+toDt+"' "+
+                                      " And a.DownloadedFlag=0 Order By a.DocumentNo";
 
                     da.SelectCommand = cmd;
                     CashCollections.TableName = "CashCollections";
