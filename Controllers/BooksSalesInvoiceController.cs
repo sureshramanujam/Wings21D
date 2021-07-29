@@ -15,55 +15,53 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string asAtDate)
+        public HttpResponseMessage Get(string dbName, string custName, string fromDate, string toDate)
         {
-            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
-            SqlDataAdapter da = new SqlDataAdapter();
-            DataTable SalesInvoices = new DataTable();
-
-            if (!String.IsNullOrEmpty(dbName))
-            {
-                try
-                {
-                    con.Open();
-
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = con;
-                    DateTime asonDate = DateTime.Parse(asAtDate);
-
-                    cmd.CommandText = "Select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.InvoiceType, " +
-                                      "a.CustomerName, a.ProductName, ISNULL(a.Quantity, 0) As Quantity, ISNULL(a.TransactionRemarks, '') As TransactionRemarks, " +
-                                      "ISNULL(b.CashAmount,0) as CashAmount, ISNULL(b.ChequeAmount,0) As ChequeAmount, ISNULL(b.ChequeNumber,'') As ChequeNumber, " +
-                                      "ISNULL(Convert(varchar,b.ChequeDate,23),'') As ChequeDate, a.Username, " +
-                                      "ISNULL(a.BranchName,'') As BranchName, ISNULL(a.LocationName,'') As LocationName, " +
-                                      "ISNULL(a.DivisionName,'') As DivisionName, ISNULL(a.ProjectName,'') As ProjectName " +
-                                      "From Books_SalesInvoice_Table a Left Join Books_SalesInvoice_Payments_Table b on b.DocumentNo = a.DocumentNo " +
-                                      "Where convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' And a.DownloadedFlag=0 Order By a.DocumentNo";
-                    da.SelectCommand = cmd;
-                    SalesInvoices.TableName = "SalesInvoices";
-                    da.Fill(SalesInvoices);
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
-
-                var returnResponseObject = new
-                {
-                    SalesInvoices = SalesInvoices
-                };
-
-                var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
-                return response;
-            }
-            else
+            if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(custName))
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
             }
+
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            //DataSet ds = new DataSet();
+            //List<string> mn = new List<string>();
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable SalesInvoices = new DataTable();
+            try
+            {
+                con.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+
+                string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+
+                cmd.CommandText = "Select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.InvoiceType, " +
+                                  "a.CustomerName, a.ProductName, ISNULL(a.Quantity, 0) As Quantity, ISNULL(a.TransactionRemarks, '') As TransactionRemarks, " +
+                                  "ISNULL(b.CashAmount,0) as CashAmount, ISNULL(b.ChequeAmount,0) As ChequeAmount, ISNULL(b.ChequeNumber,'') As ChequeNumber, " +
+                                  "ISNULL(Convert(varchar,b.ChequeDate,23),'') As ChequeDate, a.Username, " +
+                                  "ISNULL(a.BranchName,'') As BranchName, ISNULL(a.LocationName,'') As LocationName, " +
+                                  "ISNULL(a.DivisionName,'') As DivisionName, ISNULL(a.ProjectName,'') As ProjectName " +
+                                  "From Books_SalesInvoice_Table a Left Join Books_SalesInvoice_Payments_Table b on b.DocumentNo = a.DocumentNo " +
+                                  "Where a.TransactionDate between '" + fromDt + "' and '" + toDt + "' and a.CustomerName='" + custName + "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                da.SelectCommand = cmd;
+                SalesInvoices.TableName = "SalesInvoices";
+                da.Fill(SalesInvoices);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+
+            var returnResponseObject = new
+            {
+                SalesInvoices = SalesInvoices
+            };
+
+            var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+            return response;
         }
        
         // POST api/<controller>                

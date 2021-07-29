@@ -17,46 +17,43 @@ namespace Wings21D.Controllers
         // GET api/<controller>
         public HttpResponseMessage Get(string dbName, string custName)
         {
-            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
-            SqlDataAdapter da = new SqlDataAdapter();
-            DataTable SalesOrders = new DataTable();
-
-            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(custName))
-            {
-                try
-                {
-                    con.Open();
-
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = con;
-
-                    cmd.CommandText = "Select * from Books_CustomersPendingDeliveries_Desktop_Table Where CustomerName='" + custName + "' " +
-                                      "Order by DCNumber";
-                    da.SelectCommand = cmd;
-                    SalesOrders.TableName = "SalesOrders";
-                    da.Fill(SalesOrders);
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
-
-                var returnResponseObject = new
-                {
-                    SalesOrders = SalesOrders
-                };
-
-                var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
-                return response;
-            }
-            else
+            if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(custName))
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
-
             }
+
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            //DataSet ds = new DataSet();
+            //List<string> mn = new List<string>();
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable PendingDeliveries = new DataTable();
+
+            try
+            {
+                con.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+
+                cmd.CommandText = "Select * from Books_CustomersPendingDeliveries_Desktop_Table Where CustomerName='" + custName + "' " +
+                                  "Order by DCNumber";
+                da.SelectCommand = cmd;
+                PendingDeliveries.TableName = "PendingDeliveries";
+                da.Fill(PendingDeliveries);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+
+            var returnResponseObject = new
+            {
+                PendingDeliveries = PendingDeliveries
+            };
+
+            var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+            return response;
         }
 
         // GET api/<controller>/5

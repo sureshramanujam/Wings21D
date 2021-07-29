@@ -168,6 +168,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BooksCustomerBalanceController.cs" />
+    <Compile Include="Controllers\BooksCustomerCollectionController.cs" />
     <Compile Include="Controllers\BooksCustomerLedgerController.cs" />
     <Compile Include="Controllers\BooksCustomerSalesInvoicesDesktopController.cs" />
     <Compile Include="Controllers\BooksExecutiveDashboardController.cs" />
@@ -338,6 +339,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Logs\" />
     <Folder Include="Views\BooksCollections\" />
+    <Folder Include="Views\BooksCustomerCollection\" />
     <Folder Include="Views\BooksExecutiveDashboard\" />
     <Folder Include="Views\BooksSalesInvoicesReport\" />
   </ItemGroup>

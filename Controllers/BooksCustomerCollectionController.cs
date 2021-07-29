@@ -9,9 +9,10 @@ using System.Web.Http;
 using Wings21D.Models;
 using System.Linq;
 
+
 namespace Wings21D.Controllers
 {
-    public class BooksGetDesktopCustomerPaymentsController : ApiController
+    public class BooksCustomerCollectionController : ApiController
     {
 
         // GET api/<controller>
@@ -25,22 +26,22 @@ namespace Wings21D.Controllers
             //DataSet ds = new DataSet();
             //List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable CustomerPayments = new DataTable();
+            DataTable Collection = new DataTable();
             try
             {
                 con.Open();
-
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = con;
                 string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
                 string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-                cmd.CommandText = "Select  CustomerName, VoucherNumber, Convert(varchar, VoucherDate, 23) as VoucherDate,PaymentMode,ChequeNumber," +
-                    "AgainstInvoiueNumber,NetAmount,Username from Books_CustomersPayments_Desktop_Table " +
-                    " Where VoucherDate between '" + fromDt + "' and '" + toDt + "' and CustomerName='" + custName + "'";
+                cmd.CommandText = "Select CustomerName,VoucherNumber, Convert(varchar,VoucherDate,23) as VoucherDate,PaymentMode," +
+                    "ChequeNumber,AgainstInvoiceNumber,NetAmount,Username from Books_CustomersReceipts_Desktop_Table " +
+                    "Where VoucherDate between '" + fromDt + "' and '" + toDt + "' and  CustomerName='" + custName + "' ";
+
                 da.SelectCommand = cmd;
-                CustomerPayments.TableName = "CustomerPayments";
-                da.Fill(CustomerPayments);
+                Collection.TableName = "Collection";
+                da.Fill(Collection);
                 con.Close();
             }
             catch (Exception ex)
@@ -50,7 +51,7 @@ namespace Wings21D.Controllers
 
             var returnResponseObject = new
             {
-                CustomerPayments = CustomerPayments
+                Collection = Collection
             };
 
             var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
