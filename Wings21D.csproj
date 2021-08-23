@@ -169,12 +169,16 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BooksCustomerBalanceController.cs" />
     <Compile Include="Controllers\BooksCustomerCollectionController.cs" />
+    <Compile Include="Controllers\BooksCustomerCreditNotesController.cs" />
+    <Compile Include="Controllers\BooksCustomerDebitNotesController.cs" />
     <Compile Include="Controllers\BooksCustomerLedgerController.cs" />
+    <Compile Include="Controllers\BooksCustomerSaleReturnsDesktopController.cs" />
     <Compile Include="Controllers\BooksCustomerSalesInvoicesDesktopController.cs" />
     <Compile Include="Controllers\BooksExecutiveDashboardController.cs" />
     <Compile Include="Controllers\BooksSalesInvoicePaymentsController.cs" />
     <Compile Include="Controllers\BooksSalesInvoiceController.cs" />
     <Compile Include="Controllers\BooksSalesInvoicesReportController.cs" />
+    <Compile Include="Controllers\BooksCustomerSalesReturnsController.cs" />
     <Compile Include="Controllers\BranchesController.cs" />
     <Compile Include="Controllers\DivisionsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
@@ -238,7 +242,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BooksCustomerCreditNotesModel.cs" />
+    <Compile Include="Models\BooksCustomerDebitNotesModel.cs" />
     <Compile Include="Models\BooksCustomerLedgerModel.cs" />
+    <Compile Include="Models\BooksCustomerSaleReturnsDesktopModel.cs" />
     <Compile Include="Models\BooksCustomersSalesInvoicesDesktopModel.cs" />
     <Compile Include="Models\BooksSalesInvoiceEntryPaymentsModel.cs" />
     <Compile Include="Models\BooksSalesInvoiceEntryModel.cs" />
@@ -340,8 +347,15 @@
     <Folder Include="Logs\" />
     <Folder Include="Views\BooksCollections\" />
     <Folder Include="Views\BooksCustomerCollection\" />
+    <Folder Include="Views\BooksCustomerCreditNotesModel\" />
+    <Folder Include="Views\BooksCustomerCreditNotes\" />
+    <Folder Include="Views\BooksCustomerDebitNotesModel\" />
+    <Folder Include="Views\BooksCustomerDebitNotes\" />
+    <Folder Include="Views\BooksCustomerSaleReturnsDesktopModel\" />
+    <Folder Include="Views\BooksCustomerSaleReturnsDesktop\" />
     <Folder Include="Views\BooksExecutiveDashboard\" />
     <Folder Include="Views\BooksSalesInvoicesReport\" />
+    <Folder Include="Views\BooksSalesReturns\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

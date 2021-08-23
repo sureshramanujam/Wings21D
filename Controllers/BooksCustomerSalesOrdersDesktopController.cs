@@ -15,11 +15,11 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string custName)
+        public HttpResponseMessage Get(string dbName, string custName,string fromDate, string toDate)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
+  //        DataSet ds = new DataSet();
+  //        List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable DesktopSalesOrders = new DataTable();
 
@@ -31,9 +31,15 @@ namespace Wings21D.Controllers
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
+                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-                    cmd.CommandText = "Select * from Books_CustomersSalesOrdersBooked_Desktop_Table Where CustomerName='" + custName + "' " +
-                                      "Order by OrderDate, OrderNumber";
+                    cmd.CommandText = "Select OrderNo,Convert(varchar,OrderDate,23) as OrderDate,Convert(varchar,DueDate,23) as DueDate," +
+                        "CustomerName,Product,BookedQty,LineAmount,Username from Books_CustomersSalesOrdersBooked_Desktop_Table " +
+                        "Where OrderDate between '" + fromDt + "' and '" + toDt + "' and CustomerName='" + custName + "' " +
+                        "Group by OrderNo,OrderDate,DueDate,CustomerName,Product,BookedQty,LineAmount,Username " +
+                        "Order by OrderNo,OrderDate";
+                                      
                     da.SelectCommand = cmd;
                     DesktopSalesOrders.TableName = "DesktopSalesOrders";
                     da.Fill(DesktopSalesOrders);

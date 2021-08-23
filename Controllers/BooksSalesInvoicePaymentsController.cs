@@ -20,6 +20,8 @@ namespace Wings21D.Controllers
             var re = Request;
             var headers = re.Headers;
             String dbName = String.Empty;
+            string transactionSeries = String.Empty;
+            string transactionNumber = String.Empty;
 
             if (headers.Contains("dbname"))
             {
@@ -40,7 +42,7 @@ namespace Wings21D.Controllers
                     con.Open();
                     SqlDataAdapter da = new SqlDataAdapter();
                     DataTable dt = new DataTable();
-                    cmd.CommandText = "Select name from sys.tables where name='Books_SalesInvoice_Payments_Table'";
+                    cmd.CommandText = "Select name from sys.tables where name='Books_SalesInvoice_Table'";
                     da.SelectCommand = cmd;
                     dt.Clear();
                     da.Fill(dt);
@@ -60,13 +62,16 @@ namespace Wings21D.Controllers
                     docNumberAdapter.Fill(newDocumentNumber);
                     con.Close();
 
+                    //transactionSeries = si.InvoiceType == "B2B" ? "SIT-M-" : "SIR-M-";
+                    //transactionNumber = transactionSeries + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString();
+
                     if (dt.Rows.Count > 0)
                     {
                         con.Open();
                         foreach (BooksSalesInvoiceEntryPayments si in SIL)
                         {
                             cmd.CommandText = "Insert Into Books_SalesInvoice_Payments_Table Values ('" +
-                                              newDocumentNumber.Rows[0][0].ToString() + "'," + si.CashAmount + "," + si.ChequeAmount + ",'" + si.ChequeNumber +
+                                              newDocumentNumber.Rows[0][0] + "'," + si.CashAmount + "," + si.ChequeAmount + ",'" + si.ChequeNumber +
                                               "','" + String.Format("{0:yyyy-MM-dd}", si.ChequeDate) + "')";
 
                             cmd.ExecuteNonQuery();
@@ -90,7 +95,7 @@ namespace Wings21D.Controllers
                         foreach (BooksSalesInvoiceEntryPayments si in SIL)
                         {
                             cmd.CommandText = "Insert Into Books_SalesInvoice_Payments_Table Values ('" +
-                                              newDocumentNumber.Rows[0][0].ToString() + "'," + si.CashAmount + "," + si.ChequeAmount + ",'" + si.ChequeNumber +
+                                              newDocumentNumber.Rows[0][0] + "'," + si.CashAmount + "," + si.ChequeAmount + ",'" + si.ChequeNumber +
                                               "','" + String.Format("{0:yyyy-MM-dd}", si.ChequeDate) + "')";
 
                             cmd.ExecuteNonQuery();

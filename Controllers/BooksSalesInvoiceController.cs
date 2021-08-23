@@ -39,11 +39,14 @@ namespace Wings21D.Controllers
 
                 cmd.CommandText = "Select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.InvoiceType, " +
                                   "a.CustomerName, a.ProductName, ISNULL(a.Quantity, 0) As Quantity, ISNULL(a.TransactionRemarks, '') As TransactionRemarks, " +
+                                  "(a.Quantity*c.SalesPrice) As 'Amount', " +
                                   "ISNULL(b.CashAmount,0) as CashAmount, ISNULL(b.ChequeAmount,0) As ChequeAmount, ISNULL(b.ChequeNumber,'') As ChequeNumber, " +
                                   "ISNULL(Convert(varchar,b.ChequeDate,23),'') As ChequeDate, a.Username, " +
                                   "ISNULL(a.BranchName,'') As BranchName, ISNULL(a.LocationName,'') As LocationName, " +
                                   "ISNULL(a.DivisionName,'') As DivisionName, ISNULL(a.ProjectName,'') As ProjectName " +
-                                  "From Books_SalesInvoice_Table a Left Join Books_SalesInvoice_Payments_Table b on b.DocumentNo = a.DocumentNo " +
+                                  "From Books_SalesInvoice_Table a " +
+                                  "Left Join Books_SalesInvoice_Payments_Table b on b.DocumentNo = a.DocumentNo " +
+                                  "Left Join Books_Products_Table c on a.ProductName=c.ProductName " +
                                   "Where a.TransactionDate between '" + fromDt + "' and '" + toDt + "' and a.CustomerName='" + custName + "' And a.DownloadedFlag=0 Order By a.DocumentNo";
                 da.SelectCommand = cmd;
                 SalesInvoices.TableName = "SalesInvoices";
@@ -100,6 +103,7 @@ namespace Wings21D.Controllers
                     string transRemarks = String.Empty;
                     string transactionSeries = String.Empty;
                     string transcationNumber = String.Empty;
+                    //int newDocNumber = 0;
 
                     if (dt.Rows.Count > 0)
                     {
@@ -122,7 +126,7 @@ namespace Wings21D.Controllers
                             transactionSeries = si.InvoiceType == "B2B" ? "SIT-M-" : "SIR-M-";
                             transcationNumber = transactionSeries + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString();
 
-                            cmd.CommandText = "Insert Into Books_SalesInvoice_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]) +
+                            cmd.CommandText = "Insert Into Books_SalesInvoice_Table Values(" + Convert.ToInt32(newDocumentNumber.Rows[0][0]).ToString() +
                                               ",'" + String.Format("{0:yyyy-MM-dd}", todayDate.Date) + "','" + si.InvoiceType +  "','" + si.CashCreditType + "','" +
                                               si.CustomerName + "','" + si.ProductName + "'," +
                                               si.Quantity + ",'" + transRemarks + "','','','','','" + transactionSeries + "','" +

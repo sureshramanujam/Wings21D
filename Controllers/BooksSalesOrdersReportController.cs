@@ -32,7 +32,9 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
-                    
+                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+
                     cmd.CommandText = "With SalesOrdersList As( " +
                                        "Select a.DocumentNo,  Convert(varchar,TransactionDate,105) As 'OrderDate', " +
                                        "a.CustomerName, a.ProductName, b.SalesPrice, a.Quantity," +
@@ -45,7 +47,7 @@ namespace Wings21D.Controllers
                                      "Sum(Amount) As 'TotalAmount' ," +
                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +
                                      "From SalesOrdersList " +
-                                     "Where OrderDate Between '" + fromDate + "' And '" + toDate + "' And " +
+                                     "Where OrderDate Between '" + fromDt + "' And '" + toDt + "' And " +
                                      "Username='" + userName + "' " +
                                      "Group by DocumentNo, OrderDate, CustomerName, TransactionRemarks, Username " +
                                      "Order By OrderDate, DocumentNo";
