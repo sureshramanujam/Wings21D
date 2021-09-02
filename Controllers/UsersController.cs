@@ -17,52 +17,60 @@ namespace Wings21D.Controllers
         public HttpResponseMessage Get(string cName, string uName, string uPwd)
         {
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + cName + @";Data Source=localhost\SQLEXPRESS");
-            DataTable dt = new DataTable();
-
 
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
             try
             {
-                con.Open();
-                cmd.CommandText = "Select UserName,CustomerName,isRetailer from CompanyUsers_Table Where Username='" + uName + "' And UserPassword='" + uPwd + "' And ActiveStatus=1";
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = cmd;
-                dt.TableName = "Users";
-                da.Fill(dt);
-                con.Close();
+                DataTable usersDT = new DataTable();
+                {
+                    con.Open();
+                    cmd.CommandText = "Select UserName,CustomerName,isRetailer from CompanyUsers_Table Where Username='" + uName + "' And UserPassword='" + uPwd + "' And ActiveStatus=1";
+                    SqlDataAdapter da = new SqlDataAdapter();
+                    da.SelectCommand = cmd;
+                    usersDT.TableName = "Users";
+                    da.Fill(usersDT);
+                    con.Close();
+                }
+                if (usersDT.Rows.Count > 0)
+                {
+                    {
+                        DataTable tablesDT = new DataTable();
+                        con.Open();
+                        cmd.CommandText = string.Empty;
+                        cmd.CommandText = "Select name from sys.tables";
+                        SqlDataAdapter da1 = new SqlDataAdapter();
+                        da1.SelectCommand = cmd;
+                        tablesDT.TableName = "Tables";
+                        da1.Fill(tablesDT);
+                        con.Close();
 
-                var responseObject = new
-                {
-                    Users = dt
-                };
-                if (dt.Rows.Count > 0)
-                {
+                        if (tablesDT != null && tablesDT.Rows.Count > 0)
+                        {
+                            List<string> tablesCreated = new List<string>();
+                            foreach (DataRow dr in tablesDT.Rows)
+                            {
+                                tablesCreated.Add(dr[0].ToString());
+                            }
+                            new TablesRequired().CreateTables(cName, tablesCreated);
+                        }
+                    }
+                    var responseObject = new
+                    {
+                        Users = usersDT
+                    };
                     var response = Request.CreateResponse(HttpStatusCode.OK, responseObject, MediaTypeHeaderValue.Parse("application/json"));
                     return response;
                 }
                 else
                 {
-                    var response = Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid User Credentails");
-                    return response;
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid User Credentails");
                 }
-
-
             }
             catch (Exception ex)
             {
-                HttpResponseMessage responseMessage = Request.CreateErrorResponse(HttpStatusCode.NotFound, "Unable to Login");
-                return responseMessage;
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Unable to Login");
             }
-
-            //if (Convert.ToInt32(ds.Tables[0].Rows[0][0].ToString()) > 0)
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return false;
-            //}
         }
 
         // POST api/values
@@ -122,5 +130,86 @@ namespace Wings21D.Controllers
             }
         }
 
+    }
+
+    public class TablesRequired
+    {
+        public void CreateTables(string cName, List<string> tablescreated)
+        {
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + cName + @";Data Source=localhost\SQLEXPRESS");
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+
+            List<string> tablesToCreate = GetTablesList();
+            foreach (string name in tablesToCreate)
+            {
+                if (!tablescreated.Contains(name))
+                {
+                    cmd.CommandText = GetCommandText(name);
+                    if (!string.IsNullOrEmpty(cmd.CommandText))
+                    {
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+        }
+        List<string> GetTablesList()
+        {
+            return new List<string>
+            {
+                "CompanyDetails_Table",
+                "Books_SalesInvoice_Payments_Table",
+                "Books_Customer_Ledger_Table",
+                "Books_SalesInvoice_Table"
+            };
+        }
+        string GetCommandText(string name)
+        {
+            switch (name)
+            {
+                case "Books_SalesInvoice_Payments_Table":
+                    return "Create Table Books_SalesInvoice_Payments_Table (" +
+                       "DocumentNo nvarchar(200) null," +
+                       "CashAmount Decimal(18,2) null," +
+                       "ChequeAmount Decimal(18,2) null," +
+                       "ChequeNumber nvarchar(100) null," +
+                       "ChequeDate date null)";
+
+                case "Books_Customer_Ledger_Table":
+                    return "Create Table Books_Customer_Ledger_Table (" +
+                        "TransactionType nvarchar(50) null," +
+                        "VoucherNumber nvarchar(100) null," +
+                        "VoucherDate date null," +
+                        "Account nvarchar(265) null," +
+                        "ContraAccount nvarchar(265) null," +
+                        "DebitAmount decimal(18,2) null," +
+                        "CreditAmount decimal(18,2) null," +
+                        "BalanceAmount decimal(18,2) null," +
+                        "Remarks nvarchar(265) null)";
+                case "Books_SalesInvoice_Table":
+                    return "Create Table Books_SalesInvoice_Table (" +
+                            "TransactionNo nchar(100) null," +
+                                              "TransactionDate date null," +
+                                              "InvoiceType nchar(10) null," +
+                                              "CashCreditType nchar(10) null," +
+                                              "CustomerName nvarchar(265) null," +
+                                              "ProductName nvarchar(265) null," +
+                                              "Quantity decimal(18,2) null," +
+                                              "TransactionRemarks nvarchar(265) null," +
+                                              "BranchName nvarchar(265) null," +
+                                              "LocationName nvarchar(265) null," +
+                                              "DivisionName nvarchar(265) null," +
+                                              "ProjectName nvarchar(265) null," +
+                                              "TransactionSeries nchar(10) null," +
+                                              "DocumentNo nvarchar(200) null," +
+                                              "DownloadedFlag int null," +
+                                              "Username nvarchar(265) null)";
+
+            }
+            return null;
+        }
     }
 }

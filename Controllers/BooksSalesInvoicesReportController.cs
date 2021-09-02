@@ -16,23 +16,31 @@ namespace Wings21D.Controllers
         // GET: BooksSalesInvoicesReport
         public HttpResponseMessage Get(string dbName, string fromDate, string toDate, string userName)
         {
+            if (String.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(fromDate) || string.IsNullOrEmpty(toDate) || string.IsNullOrEmpty(userName))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid parameters.");
+            }
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesInvoice = new DataTable();
-            string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
-            string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+           // string fromdt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+          //  string todt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-            if (!String.IsNullOrEmpty(dbName))
-            {
+           
                 try
                 {
                     con.Open();
 
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    //DateTime asonDate = DateTime.Parse(asAtDate);
+
+                    string[] fdates = fromDate.Split('-');
+                    string fromDt = fdates[2] + "-" + fdates[1] + "-" + fdates[0];
+
+                    string[] tdates = toDate.Split('-');
+                    string toDt = tdates[2] + "-" + tdates[1] + "-" + tdates[0];
 
                     cmd.CommandText = "With SalesOrdersList As( " +
                                        "Select a.DocumentNo,TransactionDate As 'InvoiceDate', " +
@@ -49,7 +57,7 @@ namespace Wings21D.Controllers
                                      "CashAmount, ChequeAmount, InvoiceType, CashCreditType," +
                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +
                                      "From SalesOrdersList " +
-                                     "Where InvoiceDate Between '" + fromdt + "' And '" + todt + "' And " +
+                                     "Where InvoiceDate Between '" + fromDt + "' And '" + toDt + "' And " +
                                      "Username='" + userName + "' " +
                                      "Group by DocumentNo, InvoiceDate, CustomerName, TransactionRemarks, Username, CashAmount, ChequeAmount,InvoiceType,CashCreditType " +
                                      "Order By InvoiceDate, DocumentNo";
@@ -87,12 +95,7 @@ namespace Wings21D.Controllers
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-
-            }
+           
         }
     }
 }

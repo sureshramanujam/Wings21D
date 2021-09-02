@@ -17,14 +17,14 @@ namespace Wings21D.Controllers
         // GET api/<controller>
         public HttpResponseMessage Get(string dbName, string fromDate, string toDate, string userName)
         {
+            if (String.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(fromDate) || string.IsNullOrEmpty(toDate) || string.IsNullOrEmpty(userName))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid parameters.");
+            }
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable SalesOrders = new DataTable();
 
-            if (!String.IsNullOrEmpty(dbName))
-            {
                 try
                 {
                     con.Open();
@@ -32,24 +32,30 @@ namespace Wings21D.Controllers
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
                     //DateTime asonDate = DateTime.Parse(asAtDate);
-                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
-                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+                   // string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                   // string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+
+                    string[] fdates = fromDate.Split('-');
+                    string fromDt = fdates[2] + "-" + fdates[1] + "-" + fdates[0];
+
+                    string[] tdates = toDate.Split('-');
+                    string toDt = tdates[2] + "-" + tdates[1] + "-" + tdates[0];
 
                     cmd.CommandText = "With SalesOrdersList As( " +
-                                       "Select a.DocumentNo,  Convert(varchar,TransactionDate,105) As 'OrderDate', " +
+                                       "Select a.DocumentNo,  TransactionDate As 'OrderDate', " +
                                        "a.CustomerName, a.ProductName, b.SalesPrice, a.Quantity," +
                                        "(a.Quantity*b.SalesPrice) As 'Amount', " +
                                        "TransactionRemarks, DownloadedFlag, a.Username " +
                                        "From Books_SalesOrder_Table a " +
                                        "Left Join Books_Products_Table b on a.ProductName=b.ProductName " +
                                      ") " +
-                                     "Select DocumentNo, OrderDate, CustomerName, Sum(Quantity) As 'TotalQty', " +
+                                     "Select DocumentNo,Convert(varchar,OrderDate,105) OrderDate, CustomerName,ProductName,SalesPrice, Sum(Quantity) As 'TotalQty', " +
                                      "Sum(Amount) As 'TotalAmount' ," +
                                      "CASE WHEN Sum(DownloadedFlag) > 0 THEN '1' ELSE '0' END As 'DownloadedFlag', Username, TransactionRemarks " +
                                      "From SalesOrdersList " +
                                      "Where OrderDate Between '" + fromDt + "' And '" + toDt + "' And " +
                                      "Username='" + userName + "' " +
-                                     "Group by DocumentNo, OrderDate, CustomerName, TransactionRemarks, Username " +
+                                     "Group by DocumentNo, OrderDate, CustomerName,ProductName,SalesPrice, TransactionRemarks, Username " +
                                      "Order By OrderDate, DocumentNo";
                     /*
                     cmd.CommandText = "select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, b.BeatName, a.ProfitCenteRname, " +
@@ -85,12 +91,7 @@ namespace Wings21D.Controllers
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-                
-            }
+            
         }
     }
 }

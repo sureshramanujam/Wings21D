@@ -34,8 +34,13 @@ namespace Wings21D.Controllers
 
                     //DateTime dt = DateTime.Parse(fromDate);
                     //DateTime dt1 = DateTime.Parse(toDate);
-                    string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
-                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+                  // string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                  // string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+                    string[] fdates = fromDate.Split('-');
+                    string fromDt = fdates[2] + "-" + fdates[1] + "-" + fdates[0];
+
+                    string[] tdates = toDate.Split('-');
+                    string toDt = tdates[2] + "-" + tdates[1] + "-" + tdates[0];
 
                     cmd.CommandText = "Select TransactionType,VoucherNumber,Convert(varchar,VoucherDate,105) as VoucherDate,Account,ContraAccount,DebitAmount,CreditAmount,BalanceAmount,Remarks" +
                                       " from Books_Customer_Ledger_Table Where Account='" + custName + "' And VoucherDate Between '" +

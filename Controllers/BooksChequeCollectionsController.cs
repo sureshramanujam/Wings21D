@@ -17,23 +17,30 @@ namespace Wings21D.Controllers
         // GET api/<controller>
         public HttpResponseMessage Get(string dbName, string fromDate,string toDate,string userName)
         {
+            if (String.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(fromDate) || string.IsNullOrEmpty(toDate) || string.IsNullOrEmpty(userName))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid parameters.");
+            }
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
             List<string> mn = new List<string>();
             SqlDataAdapter da = new SqlDataAdapter();
             DataTable ChequeCollections = new DataTable();
 
-            if (!String.IsNullOrEmpty(dbName))
-            {
                 try
                 {
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = con;
-                    string fromDt = DateTime.Parse(fromDate).ToString("yyy-MM-dd");
-                    string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+                   // string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
+                   // string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
+                string[] fdates = fromDate.Split('-');
+                string fromDt = fdates[2] + "-" + fdates[1] + "-" + fdates[0];
 
-                    cmd.CommandText = "select a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, " +
+                string[] tdates = toDate.Split('-');
+                string toDt = tdates[2] + "-" + tdates[1] + "-" + tdates[0];
+
+                cmd.CommandText = "select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, " +
                                       "a.Amount, RTRIM(ISNULL(a.ChequeNumber,'')) As ChequeNumber, Convert(varchar,a.ChequeDate,23)  As ChequeDate, RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
                                       "a.TransactionRemarks, a.Username from ChequeCollections_Table a, Books_Customers_Table b Where " +
                                       "a.CustomerName=b.CustomerName and a.username='"+userName+"' and a.TransactionDate between '" + fromDt +"' and '"+toDt+"'"+
@@ -56,11 +63,7 @@ namespace Wings21D.Controllers
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-            }
+           
         }
 
         // GET api/<controller>/5

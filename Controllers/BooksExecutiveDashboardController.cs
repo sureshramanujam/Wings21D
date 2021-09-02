@@ -15,6 +15,10 @@ namespace Wings21D.Controllers
         //public IEnumerable<string> Get()
         public HttpResponseMessage Get(string dbName, string userName, string asAtDate)
         {
+            if (String.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(asAtDate) || string.IsNullOrEmpty(userName))
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Invalid parameters.");
+            }
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             DataSet ds = new DataSet();
 
@@ -23,11 +27,13 @@ namespace Wings21D.Controllers
             DataTable Dashboard = new DataTable();
             DataTable UserIDTable = new DataTable();
 
-            if (!String.IsNullOrEmpty(dbName) && !String.IsNullOrEmpty(userName))
-            {
+           
                 try
                 {
-                    string asatdt = DateTime.Parse(asAtDate).ToString("yyyy-MM-dd");
+                  //  string asatdt = DateTime.Parse(asAtDate).ToString("yyyy-MM-dd");
+
+                    string[] asatdates = asAtDate.Split('-');
+                    string asatdt = asatdates[2] + "-" + asatdates[1] + "-" + asatdates[0];
 
                     con.Open();
                     SqlCommand cmd = new SqlCommand();
@@ -36,13 +42,18 @@ namespace Wings21D.Controllers
                     da.SelectCommand = cmd;
                     da.Fill(UserIDTable);
 
+                    string username = string.Empty;
+                    if(UserIDTable!=null && UserIDTable.Rows.Count > 0)
+                    {
+                        username = UserIDTable.Rows[0][0].ToString();
+                    }
                     cmd.CommandText = "SELECT " +
-                                      "(SELECT count(*) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS CashTransactions, " +
-                                      "(SELECT sum(amount) From CashCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS CashAmount, " +
-                                      "(SELECT count(*) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS ChequeTransactions, " +
-                                      "(SELECT sum(amount) From ChequeCollections_Table Where Username='" + UserIDTable.Rows[0][0].ToString() + "' And TransactionDate <= '" + asatdt + "') AS ChequeAmount," +
-                                      "(Select sum(a.Quantity * b.SalesPrice) from Books_SalesOrder_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='" + UserIDTable.Rows[0][0].ToString() + "' And a.TransactionDate <= '" + asatdt + "') AS PendingOrderValue," +
-                                      "(Select sum(b.CashAmount+b.ChequeAmount) from Books_SalesInvoice_Table a left join Books_SalesInvoice_Payments_Table b on a.DocumentNo=b.DocumentNo Where a.Username='" + UserIDTable.Rows[0][0].ToString() + "' And a.TransactionDate <= '" + asatdt + "') AS SalesInvoiceValue ";
+                                      "(SELECT ISNULL(count(*),0) From CashCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS CashTransactions, " +
+                                      "(SELECT ISNULL(sum(amount),0) From CashCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS CashAmount, " +
+                                      "(SELECT ISNULL(count(*),0) From ChequeCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS ChequeTransactions, " +
+                                      "(SELECT ISNULL(sum(amount),0) From ChequeCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS ChequeAmount," +
+                                      "(Select ISNULL(sum(a.Quantity * b.SalesPrice),0) from Books_SalesOrder_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='" + username + "' And a.TransactionDate <= '" + asatdt + "') AS PendingOrderValue," +
+                                      "(Select ISNULL(sum(a.Quantity * b.SalesPrice),0) from Books_SalesInvoice_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='Supervisor' And a.TransactionDate <= '2021-09-02') AS SalesInvoiceValue ";
 
                     da.SelectCommand = cmd;
                     Dashboard.TableName = "Dashboard";
@@ -61,11 +72,7 @@ namespace Wings21D.Controllers
 
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
-            }
+            
         }
     }
 }
