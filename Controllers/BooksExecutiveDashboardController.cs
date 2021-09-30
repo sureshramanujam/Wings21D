@@ -53,6 +53,7 @@ namespace Wings21D.Controllers
                                       "(SELECT ISNULL(count(*),0) From ChequeCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS ChequeTransactions, " +
                                       "(SELECT ISNULL(sum(amount),0) From ChequeCollections_Table Where Username='" + username + "' And TransactionDate <= '" + asatdt + "') AS ChequeAmount," +
                                       "(Select ISNULL(sum(a.Quantity * b.SalesPrice),0) from Books_SalesOrder_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='" + username + "' And a.TransactionDate <= '" + asatdt + "') AS PendingOrderValue," +
+                                      "(Select ISNULL(Sum(b.PendingValue),0) From Books_Customers_Table a LEFT Join Books_CustomersPendingBills_Table b On a.CustomerName = b.CustomerName ) As Receivables,"+
                                       "(Select ISNULL(sum(a.Quantity * b.SalesPrice),0) from Books_SalesInvoice_Table a left join Books_Products_Table b on a.ProductName=b.ProductName Where a.Username='Supervisor' And a.TransactionDate <= '2021-09-02') AS SalesInvoiceValue ";
 
                     da.SelectCommand = cmd;

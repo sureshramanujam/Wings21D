@@ -10,36 +10,36 @@ using Wings21D.Models;
 using System.Linq;
 
 
-namespace Wings21D.Controllers
+namespace Wings21D.Controllers.BooksControllers
 {
-    public class BooksCustomerCollectionController : ApiController
+    public class BooksCustomerReceivablesDetailedController : ApiController
     {
-
         // GET api/<controller>
-        public HttpResponseMessage Get(string dbName, string custName, string fromDate, string toDate)
+        public HttpResponseMessage Get(string dbName, string custName)
         {
-            if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(custName))
+            if (String.IsNullOrEmpty(dbName) && String.IsNullOrEmpty(custName))
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
+
             }
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlDataAdapter da = new SqlDataAdapter();
-            DataTable Collection = new DataTable();
+            DataTable CustomerReceivable = new DataTable();
+
             try
             {
                 con.Open();
+
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = con;
-                string fromDt = DateTime.Parse(fromDate).ToString("yyyy-MM-dd");
-                string toDt = DateTime.Parse(toDate).ToString("yyyy-MM-dd");
 
-                cmd.CommandText = "Select CustomerName,VoucherNumber, Convert(varchar,VoucherDate,23) as VoucherDate,PaymentMode," +
-                    "ChequeNumber,AgainstInvoiceNumber,NetAmount,Username from Books_CustomersReceipts_Desktop_Table " +
-                    "Where VoucherDate between '" + fromDt + "' and '" + toDt + "' and  CustomerName='" + custName + "' ";
+                cmd.CommandText = "Select CustomerName,BillNumber,Convert(varchar,BillDate,105) As BillDate,PendingValue " +
+                                  " from Books_CustomersPendingBills_Table  Where CustomerName='" + custName + "' ";
+
 
                 da.SelectCommand = cmd;
-                Collection.TableName = "Collection";
-                da.Fill(Collection);
+                CustomerReceivable.TableName = "CustomerLedger";
+                da.Fill(CustomerReceivable);
                 con.Close();
             }
             catch (Exception ex)
@@ -49,11 +49,13 @@ namespace Wings21D.Controllers
 
             var returnResponseObject = new
             {
-                Collection = Collection
+                CustomerReceivable = CustomerReceivable
             };
 
             var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
             return response;
         }
+
     }
+
 }

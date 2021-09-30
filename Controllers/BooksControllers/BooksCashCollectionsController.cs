@@ -92,10 +92,60 @@ namespace Wings21D.Controllers
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
             }
+
+        }
+        //GET API Controller
+        //This method is used for sending data to Wings21D Books.
+        //In this method all the transactions with download flag zero are sended
+        public HttpResponseMessage Get(string dbName, string asAtDate)
+        {
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable CashCollections = new DataTable();
+
+            if (!String.IsNullOrEmpty(dbName))
+            {
+                try
+                {
+                    con.Open();
+
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.Connection = con;
+                    DateTime asonDate = DateTime.Parse(asAtDate);
+
+                    cmd.CommandText = "select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, " +
+                                      "a.Amount, RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
+                                      "a.TransactionRemarks, a.Username From CashCollections_Table a left join Books_Customers_Table b on " +
+                                      "a.CustomerName=b.CustomerName and Convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() +
+                                      "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                    da.SelectCommand = cmd;
+                    CashCollections.TableName = "CashCollections";
+                    da.Fill(CashCollections);
+                    con.Close();
+                }
+                catch (Exception ex)
+                {
+                    String msg =  "Exception:" + ex.ToString();
+                    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, msg);
+                }
+
+                var returnResponseObject = new
+                {
+                    CashCollections = CashCollections
+                };
+
+                var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+                return response;
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            }
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+            // GET api/<controller>/5
+            public string Get(int id)
         {
             return "value";
         }

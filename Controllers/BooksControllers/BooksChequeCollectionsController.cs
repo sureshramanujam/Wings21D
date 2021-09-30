@@ -15,6 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
+        //This method is calling from flutter to get cheque collection report
         public HttpResponseMessage Get(string dbName, string fromDate,string toDate,string userName)
         {
             if (String.IsNullOrEmpty(dbName) || string.IsNullOrEmpty(fromDate) || string.IsNullOrEmpty(toDate) || string.IsNullOrEmpty(userName))
@@ -64,6 +65,51 @@ namespace Wings21D.Controllers
                 var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
                 return response;
            
+        }
+        // GET api/<controller>
+        //This method is used for sending data to Wings21D Books.
+        //In this method all the transactions with download flag zero are sended
+        public HttpResponseMessage Get(string dbName, string asAtDate)
+        {
+            if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(asAtDate))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable ChequeCollections = new DataTable();
+
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                DateTime asOnDate = DateTime.Parse(asAtDate);
+
+                cmd.CommandText = "select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.CustomerName, " +
+                                  "a.Amount, RTRIM(ISNULL(a.ChequeNumber,'')) As ChequeNumber, Convert(varchar,a.ChequeDate,23)  As ChequeDate, RTRIM(ISNULL(a.AgainstInvoiceNumber,'')) As AgainstInvoiceNumber, " +
+                                  "a.TransactionRemarks, a.Username from ChequeCollections_Table a left join Books_Customers_Table b on " +
+                                  "a.CustomerName=b.CustomerName and Convert(varchar,a.TransactionDate,23) <= '" + asOnDate.ToString() +
+                                  "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+
+                da.SelectCommand = cmd;
+                ChequeCollections.TableName = "ChequeCollections";
+                da.Fill(ChequeCollections);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                String msg = "Exception:" + ex.ToString();
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, msg);
+            }
+
+            var returnResponseObject = new
+            {
+                ChequeCollections = ChequeCollections
+            };
+
+            var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+            return response;
         }
 
         // GET api/<controller>/5

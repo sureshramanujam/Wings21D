@@ -17,44 +17,38 @@ namespace Wings21D.Controllers
         //public IEnumerable<string> Get()
         public HttpResponseMessage Get(string dbName, string custName)
         {
-            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
-            DataSet ds = new DataSet();
-            List<string> mn = new List<string>();
-            SqlDataAdapter da = new SqlDataAdapter();
-            DataTable PendingInvoices = new DataTable();
-
-            if (!String.IsNullOrEmpty(dbName))
-            {
-                try
-                {
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = con;
-                    con.Open();
-                    cmd.CommandText = "select * from Books_CustomersPendingBills_Table " +
-                                     "Where CustomerName='" + custName + "' Order by BillDate, BillNumber";
-                    da.SelectCommand = cmd;
-                    PendingInvoices.TableName = "PendingInvoices";
-                    da.Fill(PendingInvoices);
-                    con.Close();
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-                var returnResponseObject = new
-                {
-                    PendingInvoices = PendingInvoices
-                };
-
-                var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
-
-                return response;
-            }
-            else
+            if (string.IsNullOrEmpty(dbName))
             {
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
             }
+
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable PendingInvoices = new DataTable();
+            try
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                con.Open();
+                cmd.CommandText = "select * from Books_CustomersPendingBills_Table " +
+                                 "Where CustomerName='" + custName + "' Order by BillDate, BillNumber";
+                da.SelectCommand = cmd;
+                PendingInvoices.TableName = "PendingInvoices";
+                da.Fill(PendingInvoices);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            var returnResponseObject = new
+            {
+                PendingInvoices = PendingInvoices
+            };
+
+            var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+            return response;
         }
 
         // GET api/values/5
@@ -64,77 +58,53 @@ namespace Wings21D.Controllers
         {
             var re = Request;
             var headers = re.Headers;
-            String dbName = String.Empty;
-            String uploadAll = String.Empty;
 
+            string dbName = string.Empty;
             if (headers.Contains("dbname"))
             {
                 dbName = headers.GetValues("dbname").First();
             }
-
+            if (string.IsNullOrEmpty(dbName))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+            bool uploadAllData = false;
             if (headers.Contains("uploadall"))
             {
-                uploadAll = headers.GetValues("uploadall").First();
+                string uploadAll = headers.GetValues("uploadall").First();
+                uploadAllData = uploadAll.ToLower().Trim() == "true";
             }
 
             SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
             SqlCommand cmd = new SqlCommand();
             cmd.Connection = con;
-            
-            if (!String.IsNullOrEmpty(dbName))
-            {
-                if (uploadAll.ToLower().Trim() == "true")
-                {
-                    try
-                    {   
-                        con.Open();
-                        cmd.CommandText = "Delete From Books_CustomersPendingBills_Table";
-                        cmd.ExecuteNonQuery();
-                        con.Close();
 
-                        con.Open();
-                        foreach (BooksCustomerBalance bcb in customerBalance)
-                        {
-                            bcb.customerName = bcb.customerName.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
-                                              + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
-                            cmd.ExecuteNonQuery();
-                        }
-                        con.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                    }
-                    return new HttpResponseMessage(HttpStatusCode.Created);
-                }
-                else
-                {
-                    try
-                    {
-                        con.Open();
-                        foreach (BooksCustomerBalance bcb in customerBalance)
-                        {
-                            bcb.customerName = bcb.customerName.Replace("'", "''");
-                            cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
-                                              + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
-                            cmd.ExecuteNonQuery();
-                        }
-                        con.Close();
-                        return new HttpResponseMessage(HttpStatusCode.Created);
-                    }
-                    catch (SqlException ex)
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                    }
-                }
-            }
-            else
+            try
             {
-                return new HttpResponseMessage(HttpStatusCode.NotFound);
+                if (uploadAllData)
+                {
+                    con.Open();
+                    cmd.CommandText = "Delete From Books_CustomersPendingBills_Table";
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+                {
+                    con.Open();
+                    foreach (BooksCustomerBalance bcb in customerBalance)
+                    {
+                        bcb.customerName = bcb.customerName.Replace("'", "''");
+                        cmd.CommandText = "Insert Into Books_CustomersPendingBills_Table Values('" + bcb.customerName + "', '"
+                                          + bcb.billNumber + "', '" + bcb.billDate + "', " + bcb.pendingValue + ")";
+                        cmd.ExecuteNonQuery();
+                    }
+                    con.Close();
+                }
+                return new HttpResponseMessage(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
     }
 }
-
-

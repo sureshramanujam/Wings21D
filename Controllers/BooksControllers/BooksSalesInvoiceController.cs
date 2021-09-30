@@ -15,6 +15,7 @@ namespace Wings21D.Controllers
     {
 
         // GET api/<controller>
+        //This method calling from flutter for generating pdf
         public HttpResponseMessage Get(string dbName, string custName, string fromDate, string toDate)
         {
             if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(custName))
@@ -66,9 +67,58 @@ namespace Wings21D.Controllers
             var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
             return response;
         }
-       
-        // POST api/<controller>                
-        [HttpPost]
+
+        // GET api/<controller>
+        //This method is used for sending data to Wings21D Books.
+        //In this method all the transactions with download flag zero are sended
+        public HttpResponseMessage Get(string dbName, string asAtDate)
+        {
+            if (String.IsNullOrEmpty(dbName) || String.IsNullOrEmpty(asAtDate))
+            {
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+            }
+            SqlConnection con = new SqlConnection(@"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=" + dbName + @";Data Source=localhost\SQLEXPRESS");
+            SqlDataAdapter da = new SqlDataAdapter();
+            DataTable SalesInvoices = new DataTable();
+
+            try
+            {
+                con.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = con;
+                DateTime asonDate = DateTime.Parse(asAtDate);
+
+                cmd.CommandText = "Select DISTINCT a.DocumentNo, Convert(varchar,a.TransactionDate,23) as TransactionDate, a.InvoiceType, " +
+                                  "a.CustomerName, a.ProductName, ISNULL(a.Quantity, 0) As Quantity, ISNULL(a.TransactionRemarks, '') As TransactionRemarks, " +
+                                  "ISNULL(b.CashAmount,0) as CashAmount, ISNULL(b.ChequeAmount,0) As ChequeAmount, ISNULL(b.ChequeNumber,'') As ChequeNumber, " +
+                                  "ISNULL(Convert(varchar,b.ChequeDate,23),'') As ChequeDate, a.Username, " +
+                                  "ISNULL(a.BranchName,'') As BranchName, ISNULL(a.LocationName,'') As LocationName, " +
+                                  "ISNULL(a.DivisionName,'') As DivisionName, ISNULL(a.ProjectName,'') As ProjectName " +
+                                  "From Books_SalesInvoice_Table a Left Join Books_SalesInvoice_Payments_Table b on b.DocumentNo = a.DocumentNo " +
+                                  "Where convert(varchar,a.TransactionDate,23) <= '" + asonDate.ToString() + "' And a.DownloadedFlag=0 Order By a.DocumentNo";
+                da.SelectCommand = cmd;
+                SalesInvoices.TableName = "SalesInvoices";
+                da.Fill(SalesInvoices);
+                con.Close();
+            }
+            catch (Exception ex)
+            {
+                String msg = "Exception:" + ex.ToString();
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, msg);
+            }
+
+            var returnResponseObject = new
+            {
+                SalesInvoices = SalesInvoices
+            };
+
+            var response = Request.CreateResponse(HttpStatusCode.OK, returnResponseObject, MediaTypeHeaderValue.Parse("application/json"));
+            return response;
+        }
+            
+            // POST api/<controller>                
+            [HttpPost]
         public HttpResponseMessage SaveInvoice(List<BooksSalesInvoiceEntry> SIL)
         {
             var re = Request;
